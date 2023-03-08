@@ -1,0 +1,1 @@
+py -m uvicorn infome:api --reload --port 8002 --host 0.0.0.0

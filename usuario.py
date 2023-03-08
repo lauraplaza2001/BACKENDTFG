@@ -10,8 +10,8 @@ from google.auth.transport import requests as requestsG
 from persistence import Usuario 
 from datetime import datetime, timedelta
 from time import sleep
-import jwt
-from enumerados import Rol
+
+from persistence import Rol
 
 
 
@@ -25,9 +25,9 @@ db = client.functionaltrainingassistant
 
 
 
-app = FastAPI()
+api = FastAPI()
 origins = ["*"]
-app.add_middleware(
+api.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
@@ -46,7 +46,7 @@ def parse_json(data):
 
 
 #permite hacer el logIn y crear el usuario si no estaba creado
-@app.post("/usuario/logIn/{token}")
+@api.post("/usuario/logIn/{token}")
 async def logIn(token: str):
     request = requestsG.Request()
     id_info = id_token.verify_oauth2_token(token, request, client_id, 0)
@@ -70,7 +70,7 @@ async def logIn(token: str):
 
 
 #   Devuelve todos los usuarios de la base de datos 
-@app.get("/usuario")
+@api.get("/usuario")
 async def devolverUsuarios():
     usuarios = []
     cursor = list(db.usuarios.find())
@@ -80,9 +80,8 @@ async def devolverUsuarios():
 
 
 
-
 #   Devuelve un usuario cuyo email exacto entre por path
-@app.get("/usuarios/{email}")                      
+@api.get("/usuarios/{email}")                      
 async def buscarUsuario(email : str):
 
     usuario = parse_json(db.usuario.find_one({"email" : email}))
