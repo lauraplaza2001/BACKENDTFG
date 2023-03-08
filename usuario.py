@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from time import sleep
 
 from persistence import Rol
+from persistence import Usuario
 
 
 
@@ -38,10 +39,27 @@ api.add_middleware(
 
 
 
-
     
 def parse_json(data):
     return json.loads(json_util.dumps(data))
+
+
+#   Permite crear un ejercicio 
+@api.post("/usuario/crear/",status_code=201)
+async def crearEjercicio(usuarioIn : Usuario) :
+    usuario = {
+       
+        "email" : usuarioIn.email,
+        "rol" : Rol.USUARIO.value,
+        "token" : usuarioIn.token
+      
+    }
+
+    db.usuario.insert_one(usuario)
+    return({"mensaje":"Usuario creado correctamente"})
+
+
+
 
 
 
@@ -73,7 +91,7 @@ async def logIn(token: str):
 @api.get("/usuario")
 async def devolverUsuarios():
     usuarios = []
-    cursor = list(db.usuarios.find())
+    cursor = list(db.usuario.find())
     for doc in cursor:
         usuarios.append(parse_json(doc))
     return usuarios

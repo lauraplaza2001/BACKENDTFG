@@ -40,6 +40,7 @@ class Usuario(BaseModel):
     id : Union[str,None] = None
     email: str
     rol: Rol
+    token: str
 
 class Ejercicio(BaseModel) :
     id : Union[str,None] = None
