@@ -76,5 +76,17 @@ async def editarEjercicio(ejercicioIn: Ejercicio, response: Response) :
         return {"message": "Item no encontrado" }
     else:
         print(ejercicio)
-        return {"mensaje" : "Vivienda actualizado con éxito"}
+        return {"mensaje" : "Ejercicio actualizado con éxito"}
+
+################# CUIDADO CON ESTO ############################ TENGO QUE CAMBIAR LA CONSULTA
+#filtrar por nombre de ejercicio
+@api.get("/ejercicio/{nombre}")
+async def filtroNombre(nombre: str):
+    ejercicios = []
+    cursor = list(db.ejercicio.find())
+    for doc in cursor:
+        if nombre in doc['nombre']:
+         ejercicios.append(parse_json(doc))
+    return ejercicios
+
 

@@ -62,27 +62,25 @@ async def crearEjercicio(usuarioIn : Usuario) :
 
 
 
-
-#permite hacer el logIn y crear el usuario si no estaba creado
-@api.post("/usuario/logIn/{token}")
+@api.get("/usuario/logIn/{token}")
 async def logIn(token: str):
     request = requestsG.Request()
+
     id_info = id_token.verify_oauth2_token(token, request, client_id, 0)
 
-    usuario = {
-        "email": id_info["email"],
-        "rol" : Rol.USUARIO
-    }
-
-    db.usuario.insert_one(usuario)
-    
-    # https://developers.google.com/identity/gsi/web/guides/verify-google-id-token
+    nombreUsuario = id_info["given_name"]+" "+id_info["family_name"]
+    usuario = parse_json(db.usuario.find_one({"nombre" : nombreUsuario}))
+    if usuario == None:
+        db.usuario.insert_one({
+            "nombre" : nombreUsuario,
+            "email" : id_info["email"],
+            "rol" : Rol.USUARIO.value
+        })
 
     returnValue = {
-        "usuario": id_info['email'],
-        "foto": id_info["picture"]
+        "usuario" : parse_json(db.usuario.find_one({"nombre" : nombreUsuario})),
+        "foto" : id_info["picture"]
     }
-    
     return returnValue
 
 
