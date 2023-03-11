@@ -8,6 +8,7 @@ from google.oauth2 import id_token
 import requests
 from google.auth.transport import requests as requestsG
 from persistence import Ejercicio
+from persistence import Tips
 
 
 
@@ -42,13 +43,20 @@ def parse_json(data):
 #   Permite crear un ejercicio 
 @api.post("/ejercicio/crear/",status_code=201)
 async def crearEjercicio(ejercicioIn : Ejercicio) :
+    tips = []
+
+    for tip in ejercicioIn.tips:
+        tips.append(tip.value)
+  
+    
     ejercicio = {
         "nombre" : ejercicioIn.nombre,
         "descripcion" : ejercicioIn.descripcion,
         "dificultad" : ejercicioIn.dificultad.value,
         "video" : ejercicioIn.video,
         "foto" : ejercicioIn.foto,
-        "tips" : ejercicioIn.tips
+        "tips": tips
+      
     }
 
     db.ejercicio.insert_one(ejercicio)
