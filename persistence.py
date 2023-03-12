@@ -51,6 +51,7 @@ class Ejercicio(BaseModel) :
     video : Union[str,None] = None
     foto : Union[str,None] = None
     tips : List[Tips]
+    gruposMusculares: List[GruposMusuclares]
 
 
 class Informe(BaseModel) : 

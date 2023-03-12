@@ -44,10 +44,13 @@ def parse_json(data):
 @api.post("/ejercicio/crear/",status_code=201)
 async def crearEjercicio(ejercicioIn : Ejercicio) :
     tips = []
+    gruposMusculares = []
 
     for tip in ejercicioIn.tips:
         tips.append(tip.value)
-  
+   
+    for grupoMuscular in ejercicioIn.gruposMusculares:
+        gruposMusculares.append(grupoMuscular.value)
     
     ejercicio = {
         "nombre" : ejercicioIn.nombre,
@@ -55,7 +58,8 @@ async def crearEjercicio(ejercicioIn : Ejercicio) :
         "dificultad" : ejercicioIn.dificultad.value,
         "video" : ejercicioIn.video,
         "foto" : ejercicioIn.foto,
-        "tips": tips
+        "tips": tips,
+        "gruposMusculares": gruposMusculares
       
     }
 
