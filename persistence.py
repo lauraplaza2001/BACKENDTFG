@@ -8,13 +8,7 @@ class Rol(Enum):
     ADMIN = "ADMIN"
     USUARIO = "USUARIO"
 
-class GruposMusuclares(Enum):
-    PIERNAS = "PIERNAS"
-    BRAZOS = "BRAZOS"
-    ESPALDA = "ESPALDA"
-    HOMBROS = "HOMBROS"
-    PECHO = "PECHO"
-    ABDOMEN = "ABDOMEN"  
+
 
 class Dificultad(Enum):
     BAJA = "BAJA"
@@ -43,6 +37,15 @@ class Usuario(BaseModel):
     rol: Rol
     token: str
 
+
+class GruposMusuclares(Enum):
+    PIERNAS = "PIERNAS"
+    BRAZOS = "BRAZOS"
+    ESPALDA = "ESPALDA"
+    HOMBROS = "HOMBROS"
+    PECHO = "PECHO"
+    ABDOMEN = "ABDOMEN"  
+
 class Ejercicio(BaseModel) :
     id : Union[str,None] = None
     nombre : Union[str,None] = None
@@ -59,7 +62,14 @@ class Informe(BaseModel) :
     usuario : Union[str,None] = None
     ejercicio : Union[str,None] = None
     resultado : Union[str,None] = None
+    videoPerfil : Union[str,None] = None
+    videoFrontal : Union[str,None] = None
 
+class InformeAux(BaseModel) :
+    idUsuario : Union[str,None] = None
+    idEjercicio : Union[str,None] = None
+    videoPerfil : Union[str,None] = None
+    videoFrontal : Union[str,None] = None
 
 
 

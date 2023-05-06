@@ -1,0 +1,456 @@
+Para agarre cerrado agarre abierto:
+print(abs(muñecaIzq_x-rodillaIzq_x))
+print(abs(muñecaDer_x-rodillaDer_x))
+
+AGARRE ABIERTO: 
+55.950000000000045
+52.58100000000002
+
+56.013000000000034
+59.144000000000005
+
+55.98099999999994
+55.92700000000002
+
+59.337000000000046
+55.93600000000001
+
+______________________________________________________________________
+
+AGARRE CERRADO
+31.299999999999955
+14.088000000000022
+
+
+28.024
+17.572000000000003
+
+31.384000000000015
+17.60300000000001
+
+31.286
+13.956999999999994
+
+27.958000000000027
+17.39699999999999
+
+
+
+______________________________________________________________________
+BARRA PEGADA AL CUERPO (PERFIL) ->  print(abs(muñecaIzq_x-talonIzq_x))
+_________________________________________________________________
+ejemplo en barra despegada (lado izquerdo, el q + se ve): 
+104.52699999999999
+104.719
+104.62599999999998
+104.69400000000002
+
+
+
+barra pegadaal cuerpo: 
+66.495
+66.517
+69.83699999999999
+69.81
+
+
+
+
+
+
+
+
+_____________________________________________________
+PESO BIEN DISTRIBUIDO EN LOS PIES
+__________________________________________________
+normalmente ocurre que la rodilla pasa al pie y estamos de puntillas
+
+en una buena: con big-toe
+(pos inicio)
+6.918000000000006
+(pos mas avanzada):
+0.02400000000000091
+-0.04699999999996862
+-17.214??
+-10.416999999999973 ???
+
+
+con small toe: (en ningun momento es negativo)
+pos inicio:
+21.002999999999986
+20.99000000000001
+20.847000000000037
+3.312000000000012
+3.2840000000000487
+3.486000000000047
+
+
+
+
+
+OPCION 2:
+talon con dedo del pie, qeu estén con la misma y practicamente
+o que se mantenga todo el rato igual
+//BIG TOE con TALON
+// SMALL TOE CON TALON, no estoy seugra 
+
+video bueno con BIgG TOE
+
+6.800999999999931
+0.18899999999996453
+0.22199999999998
+3.479000000000042
+3.490000000000009
+3.620999999999981
+6.7970000000000255
+3.3250000000000455
+3.479000000000042
+
+otro video bueno : 
+
+0.09399999999993724
+0.1710000000000491
+0.1269999999999527
+0.06399999999996453
+0.0909999999998945
+0.16800000000000637
+
+** tengo dudas aquí, tal vez lo que tenga que hacer es comporbar que se mantiene casi todo el rato
+
+
+__________________________________________________
+
+ESPALDA DOBLADA ----cuidado que se puede confundir con espalda alejada
+__________________________________________________
+cadera y hombros casi a la misma altura (mirar el primer 20% de los archivos)
+en video de espalda alejada:
+10.360000000000014
+6.7970000000000255
+6.751999999999953
+6.858999999999924
+13.932999999999993
+10.594000000000051
+
+
+
+en video con espalda bien:
+62.902999999999906
+67.75
+59.50699999999995
+59.31899999999996
+59.23700000000008
+56.049999999999955
+59.41700000000003
+
+_______________________________________________________
+
+RODILLAS ADELANTADA (ES DECIR DESPEGAR TALOENS)
+
+si las rodillas adelantan a los dedos, levanta los talones 
+ e decir si, rodilla- punta del pie es negativo,quiere decir que está adelantando la rodilla 
+ y está levantando los talones
+
+
+
+
+
+______________________________________________________________________
+EXTENSION DE CADERAS Y RODILLAS
+_____________________________________________________
+(he mirado el utlimo json de keypoints, primero el bueno, segundo barra despegada)
+//creo que es mas inteligente si pongo tobillo en vez de talon
+
+talon-cadera           
+3.5609999999999786
+31.340000000000032
+
+talon-rodilla
+24.241999999999962
+48.57600000000002
+
+
+talon-hombro
+3.3700000000000045
+20.93599999999998
+
+
+cadera-rodilla
+20.680999999999983
+17.23599999999999
+
+
+cadera-hombro
+0.19099999999997408
+10.404000000000053
+
+
+rodila-hombro
+20.871999999999957
+48.57600000000002
+
+**** CONCLUSIONES:
+extension de cadera: relacion hombro-cadera eje X
+extension de rodillas: relacion rodillas- tobillo eje x 
+print(abs(tobilloIzq_x-rodillaIzq_x))
+
+
+
+
+1º Se cumple que hay buena posicion de front rack?
+2ª la barra sube vertical?
+__________________________________________________________________
+VERTICALIDAD DE LA BARRA DESDE FRONT RACK(mano nunca adelante a codo)
+_________________________________________________________________
+**muñeca-codo eje y
+print(muñecaIzq_x-codoIzq_x)
+
+
+**otra opcion podría se que la mano no adelante al codo (buen video)
+6
+20
+20
+17,9
+
+
+
+mano-codo mal video:
+-24.416999999999973
+-24.40100000000001
+-17.550999999999988
+-20.979000000000042
+
+__________________________________________________________________
+BARRA APOYADA EN HOMBROS EN FRONT RACK(principio del movimiento)
+______________________________________________________________________
+hombros y muñecas muy cerca enel eje y 
+print(muñecaDer_y - hombroDer_y)
+print(muñecaIzq_y - hombroIzq_y)
+(mi maximo ha sido 7)
+
+-10
+-6
+6,49
+6'9
+-7
+-3
+-6
+3
+
+// pongo en torno a 12 ??
+
+
+__________________________________________________
+ALTURA DE LOS CODOS EN FRONT RACK (PERFIL)
+__________________________________________________
+Los codos se quedan cerca de la altura ded los hombros
+eje y
+
+(este no lo he podido probar)
+print(codoIzq_y - hombroIzq_y) #  coefienciento <= numero (numero positivo cercano al 0)
+
+
+
+
+
+
+_________________________________________________________________
+ROMPER EL PARALELO (no lo he probado)
+_________________________________________________________________
+de perfil.
+que la cadera se quede por debajo o igual que la altura de las rodillas
+ eje y
+
+print(caderaIzq_y-rodillaIzq_y) 
+# si esto es negativo, no está rompiendo el paralelo
+#entonces buscaremos que se cumpla x veces para decir que se rompe
+
+________________________________________________________________________
+EXTENSION DE CODOS
+- si tengo el punto del hombro y el  y de la muñeca, tengo una RECTA
+esa recta debe contener al punto del codo
+
+#lado derecho
+#y = mx + n
+m = (muñecaDer_y - hombroDer_y) / (muñecaDer_x - hombroDer_x)
+n = hombroDer_y - (m * hombroDer_x)
+  
+// esos dos valores deberían dar practicamente lo mismo
+print(codoDer_y)
+print(m * codoDer_x + n)
+
+
+//lados dercho e izquierdo respectivamente
+356.56
+334.865705226209
+373.907
+372.42400890601186
+
+
+NO EXTENSION DE CODOS  :
+370.535
+272.3095090615042
+373.988
+332.4695364238413
+
+
+__________________________________
+RODILAS SIGUEN LA LINEA DEL PIE (frontal)
+__________________________________
+NO LO HE PODIDO PROBAR
+en el eje x, vamos a inentar que que la rodilla no esté
+muy alejada de la punta del pie.
+ si se mete rodillas muy para dentro 
+
+// para cada rodilla seria diferente realmente 
+
+
+
+__________________________________________________
+BLOQUEO DE CODOS (durante todo el movimiento, para ohs por ejempolo)
+__________________________________
+es lo mismo que extension de codos , pero durante todo el rato
+
+
+
+__________________________________
+ANCHURA PIES CADERA (FRONTAL)
+__________________________________
+
+
+print("ANCHURA PIES CADERA")
+print(tobilloIzq_x - caderaIzq_x) # deben ser cercano a 0
+print(tobilloDer_x -caderaDer_x)
+
+me sale bastante ->
+27
+38
+27
+38
+28
+38
+
+
+_________________________________
+ANCHURA PIES HOMBROS(FRONTAL)
+_________________________________
+print("ANCHURA PIES HOMBROS")
+print(rodillaIzq_x - hombroIzq_x) # deben ser cercano a 0
+print(rodillaDer_x -hombroDer_x)
+
+17
+24
+13
+24
+14
+24
+
+
+
+
+******************************************************************
+1 segundo son entorno a 30-40 json
+
+Movimientos:
+-Air Squat
+-Front Squat
+-Back Squat
+-Overhead Squat
+-Deadlift
+-Shoulder press
+-Push press
+-¿Push jerk?
+
+-Thruster??
+-Push Up -
+-Squat clean (no lo creo)
+
+
+
+-VERTICALIDAD DE LA BARRA EN FRONT RACK -> shouldr press, push press
+lo puedo mirar en cualquier momento, se tiene que cumplir siempre
+
+-ALTURA DE CODOS FRONT RACK RACK ->  front squat, push press, shoulder press??
+front squat-> cualquier momento
+push press ,shoulder press -> solo al principio (tal vez pueda evita esto  con posicion de front rack )
+
+
+-BARRA APOYADA EN HOMBROS EN FRONT RACK ->  shoulder press, push press
+al principio del movimiento tipo los 5-6 primeros json que se cumpla al menos un 60-70%
+
+
+-ESPALDA DOBLADA -> Deadlift , front squat?, back squat? air squat?
+ 
+-AGARRE ABIERTO -> Overhead Squat 
+en cualquier momento(en general con al principio me vale)
+
+
+-AGARRE CERRADO-> Front Squat, ,Deadlift, Shoulder Press, Push press
+en cualquier momento (aunque al principio me vale)
+
+-BARRA PEGADA AL CUERPO -> deadlift
+en cualquier momento
+
+
+-EXTENSION DE CADERA Y RODILLAS -> air squt, front squt, back squat, overhead suat, deadlift, push press, incluso shoulder press
+todos al final del movimiento
+pero, push press,y shoulder press , tambien los primeros movimientos
+
+
+-PESO BIEN DISTRIBUIDO EN PIE-> air squt, front squt, back squat, overhead suat, deadlift, push press
+en cualquier momento
+aunque los puntos mas críticos:
+     en la sentadilla es en mitad del movimiento
+     en el deadlift, en posicion de inicio
+     en push press al princio en el empuje 
+
+
+
+-RODILLAS SIGUEN LÍNEA DEL PIE -> air squat, front squat, back squat, overgead saqut , deadlift, push press(empuje)
+    en sentadillas entre 1/4 y 3/4 del video 
+    en deadlift sobretodo del princicpio a 3/4 del video 
+    en push press en la primera parte : hasta 1/3 del video
+
+
+-EXTENSIÓN COMPLETA DE CODOS -> shoulder press, push press, OHS?
+    shoulder press y push press  al  final del movimiento ultimos 5 json
+    ohs -> todo el rato 
+
+-ROMPER PARALELO -> Air squat, front squat, back squat, overhead squat
+    entre 2/4 y 3/4 del video
+
+-BLOQUEO DE CODOS -> OHS
+    todo el rato
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+            archivo_json = 'InfoOpenPose/json/frontalJson/frontal_0000000000100_keypoints.json'
+            perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+            caderaIzq_x = perfil_pose_keypoints_2d[8*3+1]
+            caderaIzq_y = perfil_pose_keypoints_2d[8*3+2]
+            caderaDer_x = perfil_pose_keypoints_2d[11*3+1]
+            caderaDer_y = perfil_pose_keypoints_2d[11*3+2]
+
+
+            print(perfil_pose_keypoints_2d)

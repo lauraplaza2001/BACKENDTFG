@@ -1,0 +1,7 @@
+Es importante que cada vez que cambie los permisos de un archivo se cambie el token.json porque cambia
+Si no lo cambio tal vez no me pueda descargar los archivos.
+
+Basicamente en la primera sesión tengo qeu iniciarla con mi cuenta en el enlace qeu me dice la terminal y ya despues puedo acceder  a mis archivos
+
+Para poder conectarme he tenido que crear en console.cloud un usuario de escritorio y he añadido enel proyecto a mi cuenta de la uma como usuario . ademas me he descargado
+los credenciales como credentials.json, que es el archivo que está aquí

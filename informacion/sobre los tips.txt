@@ -1,0 +1,104 @@
+Obviamente analizando un json no podemos estar seguros. Mínimo 4-5 
+Tambien tengo que tener encuenta que cada keypoint tiene 3 valores: x,y,valor de confianza
+
+ANCHURAPIESCADERA
+-Se analiza con una de las primeras fotos ya que es posición de inicio
+-Visualizar en frontal
+-Relacion talón cadera
+
+
+
+ANCHURAPIESHOMBROS
+-Se analiza con una de las primeras fotos ya que es posición de inicio
+-Visualizar en frontal
+-Relacion talón-hombros eje x practicamente igual
+
+
+
+ANCHURAABIERTOAGARREBARRA
+-Se analiza con una de las primeras fotos(realmente da igual)
+-frontal
+-Relacion hombros-manos eje x (hay que restar distancias )
+
+o relacion rodilla -mano 
+
+
+ANCHURACERRADOAGARREBARRA
+-Se analiza con una de las primeras fotos
+-frontal
+-Relacion hombros-manos eje x (hay que restar distancias y que sea practicamente 0)
+
+
+EXTENSIONCOMPLETACADERAYRODILLAS
+-Se analiza al final del movimiento 
+-perfil 
+-Relacion hombro-cadera-rodillas eje x (no haya casi apenas diferencia == 0)
+
+
+EXTENSIONCOMPLETACODOS
+-Se analiza al final del movimiento 
+-perfil 
+-Relacion hombros-codo-cadera eje x (no haya casi apenas diferencia == 0)
+
+
+
+BARRAPEGADACUERPO -> para verticalidad de la barra
+ -Se analiza en cualquier parte del movimiento.
+ -perfil
+ -Relacion mano-talon eje x(q sea practicamente 0)
+
+
+RODILLASSIGUENLINEAPIES
+-Se analiza en cualquier parte del movimiento.
+-frontal eje x
+relacion rodillas-talon que no se vaya mucho 
+        - si se aleja mucho acercandosea las puntas de los pies quiere decir q tu sentadillas esmodo rana 
+        - si se aleja mucho pero acercandose a la linea del cuerpo, quiere decir q estas metiendo las rodillas para dentro
+
+
+
+PESO BIEN DISTRIBUIDO EN LOS PIES 
+-perfil
+-rodillas - punta del pie
+si la rodilla adelanta la punta del pie quiere decir que el peso está en las putillas
+
+
+
+RODILLAS SIGUEN LA LÍENA DEL PIE
+-perfil
+relacion rodilla-dedos del pie?
+        * puede pasar q la diferencia sea + o -(rodillas hacia dentro o hacia fuera)
+
+
+MANTENER ESPALDA RECTA (sobre todo principio del movimiento posicion de salida)
+-perfil
+Relacion cadera-hombro en el eje y 
+si la relacion es muy pequeña, es porque está doblando la espalda
+se puede comprobar hasta el 20% aprox de los primeros json
+
+
+_PARA ANALIZAR ESTO es importante que se cumpla antes que se tenga una buena posición de front rack
+VERTICALIDAD DE LA BARRA DESDE FRONT RACK 
+-perfil
+-eje X
+
+-- podría ser que la mano no adelante al codo en ningun momento(creo que me gusta esto más )
+-otra opcion : que el tobillo esté proximo a las manos 
+
+
+
+
+CODOS ALTOS FRONT RACK
+
+
+
+
+
+
+
+
+
+
+-CONTROL DE RODILLAS SIGUEN LA LINEA DEL PIE (evitamos rodillas para dentro) -> caderas-rodillas o cadera-tobillos me valdría EJE X (FRONTAL)
+-ROMPER EL PARALELO -> cadera - rodillas  EJE Y  (PERFIL) -> cadera por debajo de rodillas en algún momento
+-ALTURA DE LOS CODOS EN POSICIÓN FRONT RACK -> codo-hombro EJE Y (FRONTAL) -> Por ejemplo en una sentadilla frontal codos y hombros a la misma altura, en un empuje, codos un poco más abajo de hombros

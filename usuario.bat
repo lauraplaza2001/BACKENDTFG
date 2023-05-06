@@ -1,1 +1,1 @@
-py -m uvicorn usuario:api --reload --port 8000 
+py -m uvicorn usuario:api --reload --port 8000 --host 0.0.0.0

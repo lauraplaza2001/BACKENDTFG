@@ -1,0 +1,27 @@
+Me he dado cuenta de que midiendo simplemente los keypoints 
+no me es sufuciente ya que si la persoan está a más distancias
+los keypoint varían
+por tanto he pensado usar un coeficiente
+
+la relacion entre la distancia a la camara dividido entre la 
+altura de la persona  me da un coeficiente y ese 
+coeficiente con mis numeros tiene asignado un número
+por ejemplo : 1'64/2m = 20 
+
+hago una regla de 3
+si la persona mide 1,80 y está a 3 metros ,el coeficiente
+deberia ser otro
+
+1'64/2m    -    20
+1'80/3m    -     x 
+
+COMO CONCLUSIÓN, me es imposible calcular  la altura de la persona y la distancia a la camara  con los keypoints
+ya que para ello necesitaria que la persona se pusiese recta antes de empezar el movimiento (dando ella la altura)
+para poder calcular la distancia a la camara gracias a a esa altura
+entonces en los requisitos al grabar el vídeo voy a poner:
+-Separese a 2 metros de la camara
+
+
+
+
+

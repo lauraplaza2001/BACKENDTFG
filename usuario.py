@@ -44,8 +44,8 @@ def parse_json(data):
     return json.loads(json_util.dumps(data))
 
 
-#   Permite crear un ejercicio 
-@api.post("/usuario/crear/",status_code=201)
+#   Permite crear un usuario
+@api.post("/usuarios/crear/",status_code=201)
 async def crearEjercicio(usuarioIn : Usuario) :
     usuario = {
        
@@ -60,9 +60,7 @@ async def crearEjercicio(usuarioIn : Usuario) :
 
 
 
-
-
-@api.get("/usuario/logIn/{token}")
+@api.get("/usuarios/logIn/{token}")
 async def logIn(token: str):
     request = requestsG.Request()
 
@@ -83,10 +81,17 @@ async def logIn(token: str):
     }
     return returnValue
 
+#   Devuelve un usuario cuyo id exacto entre por path
+@api.get("/usuarios/filter/{id}")                      
+async def buscarUsuarioId(id : str):
+    usuario = parse_json(db.usuario.find_one({"_id": ObjectId(id)}))
+    return usuario
+    
+
 
 
 #   Devuelve todos los usuarios de la base de datos 
-@api.get("/usuario")
+@api.get("/usuarios")
 async def devolverUsuarios():
     usuarios = []
     cursor = list(db.usuario.find())
@@ -98,9 +103,10 @@ async def devolverUsuarios():
 
 #   Devuelve un usuario cuyo email exacto entre por path
 @api.get("/usuarios/{email}")                      
-async def buscarUsuario(email : str):
+async def buscarUsuarioEmail(email : str):
 
     usuario = parse_json(db.usuario.find_one({"email" : email}))
     return usuario
+
 
 

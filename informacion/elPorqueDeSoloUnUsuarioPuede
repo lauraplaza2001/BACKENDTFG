@@ -1,0 +1,3 @@
+Solo puede un usuario usar la aplicacion a la vez, porqeu al usar  mi maquina local , no teiene los suficientes recursos
+para que ejecutar Open Pose ,portanto uso Google Colab  + Flask para poder ejecutar los comandos de gogole colab cuando
+quiera, por tanto no puedo pasarle parametros y no puedo crear en google drive una carpeta para cada usuario
