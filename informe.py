@@ -348,10 +348,8 @@ def generarResultados(ejercicio : Ejercicio, videoFrontal : str, videoPerfil: st
                 talonIzq_x=perfil_pose_keypoints_2d[21*3]
 
 
-
                 extRodilla = abs(rodillaIzq_x-talonIzq_x)
                 
-              
     
                 if( extRodilla <= cotaExtensionRodilla) :
                     rodillafinal = rodillafinal+1
@@ -414,32 +412,237 @@ def generarResultados(ejercicio : Ejercicio, videoFrontal : str, videoPerfil: st
                 diferencia= muñecaIzq_x-codoIzq_x
                 if(diferencia + margen  < 0) # si la diferencia + la cota me sale negativo es porque la muñeca está adelantando al codo
                     contador = contador+1
+             
+
+            if contador >= limiteVeces :
+                incorrecto.append("La barra debe subir lo más vertical posible. La mano no debe adelantar al codo en ningún momento")
+            else:
+                correcto.append("La barra sube de forma vertical")
+
+
+        
+        elif tip == "RODILLASSIGUENLINEAPIES": # rodillas-bigtoes frontal eje x
+            limiteVeces=3
+            rodillasFuera= 0
+            rodillasDentro= 0
+            margen = 3
+
+            for keypoint in keypointsFrontal :
+                archivo_json= 'InfoOpenPose/json/frontalJson/' + keypoint
+                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+
+                rodillaDer_x=perfil_pose_keypoints_2d[10*3]
+                rodillaIzq_x=perfil_pose_keypoints_2d[13*3]
+                bigToeDer_x=perfil_pose_keypoints_2d[22*3]
+                bigToeIzq_x=perfil_pose_keypoints_2d[19*3]
+                
+                diferenciaDer= rodillaDer_x-bigToeDer_x
+                diferenciaIzq= bigToeIzq_x - rodillaIzq_x
+
+                if(diferenciaDer > margen or diferenciaDer > margen) :# rodillas para fuera
+                    rodillasFuera = rodillasFuera+1
+                    
+                elif(diferenciaDer < -margen or diferenciaIzq < -margen):#rodillas para dentro
+                    rodillasDentro = rodillasDentro +1
+                
+
+
+            if rodillasFuera >= limiteVeces:
+                   incorrecto.append("Evite llevar las rodillas hacia fuera. Intente que las rodillas sigan la línea del pie")
+            elif rodillasDentro >= limiteVeces : 
+                incorrecto.append("Evite llevar las rodillas hacia dentro. Intente que las rodillas sigan la línea del pie")
+            else:
+                correcto.append("Las rodillas siguen la línea del pie correctamente")
+
+
+
+
+        elif tip == "ROMPERELPARALELO": #cadera-rodilla(eje y) (perfil, solo me interesa lado izquierdo)
+            limiteVeces=3
+            contador=0
+          #  margen = 1
+
+
+            for keypoint in keypointsPerfil :
+                archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
+                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+
+                rodillaIzq_y=perfil_pose_keypoints_2d[13*3+1]
+                caderaIzq_y=perfil_pose_keypoints_2d[12*3+1]
+
+                diferencia = rodillaIzq_y-caderaIzq_y
+
+                #diferencia + margen <0
+                if(diferencia < 0) : # si es menor que 0 está rompiendo el paralelo
+                    contador = contador +1
+            
+
+            if(contador >= limiteVeces):
+                incorrecto.append("Baje más profundo, no está rompiendo el paralelo")
+            else:
+                correcto.append("Está rompiendo el paralelo correctamente")
+
+
+
+        elif tip== "BARRAAPOYADAHOMBROS": # hombro-muñeca eje y frontal
+            limiteVeces=3
+            contador=0
+            apoyado=0 # nada mas que se cumpla 3 veces que está apoyado, entonces perfecto
+            margen= 7
+
+            while(contador < 0.3* len(keypointsFrontal)) :
+                archivo_json= 'InfoOpenPose/json/frontalJson/' + keypointsFrontal[contador]
+                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+
+                hombroDer_y =perfil_pose_keypoints_2d[2*3+1]
+                muñecaDer_y=perfil_pose_keypoints_2d[4*3+1]
+                hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]
+                muñecaIzq_y=perfil_pose_keypoints_2d[7*3+1]
+
+                #pongo un or porque a veces no pilla bien a la muñeca, realmente es muy extraño qeu una persona lo apoye de un lado y del otro no
+                if(abs(hombroDer_y-muñecaDer_y) > margen or abs(hombroIzq_y-muñecaIzq_y) > margen ) :
+                    apoyado=apoyado+1
+
+                contador=contador+1
+            
+            if(contador>= limiteVeces):
+                correcto.append("Barra apoyada en los hombros en posición de front rack")
+            else:
+                incorrecto.append("Apoye la barra en los hombros en posición de inicio")
+
+
+
+        elif tip == "CODOSALTOSPOSICIONFRONTRACK": # perfil, codos-hombros eje y
+            limiteVeces=4 # si ocurre al menos 4 veces que los codos están mas bajos de la cuenta, entonces, esta mal
+            contador = 0 
+            margendedistancia=3
+
+            for keypoint in keypointsPerfil :
+                archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
+                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+                #solo el izquierdo
+                hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]
+                codoIzq_y=perfil_pose_keypoints_2d[6*3+1]
+
+                if(abs(codoIzq_y-hombroIzq_y) > margendedistancia) :
+                    contador = contador+1
+            
+            if(contador >= limiteVeces):
+                incorrecto.append("Recuerde llevar los codos altos en posición de Front Rack")
+            else:
+                correcto.append("Codos altos en posición de Front Rack")
+
+
+
+
+#al final del movimiento
+        elif tip== "EXTENSIONCOMPLETACODOS": # muñeca, hombro, codos, frontal ejes xy
+            margen = 3
+            contador = 0.8* len(keypointsFrontal)
+            secumple=0
+            limiteveces=2
+
+
+            while(contador < len(keypointsFrontal)):
+                archivo_json= 'InfoOpenPose/json/frontalJson/' + keypointsFrontal[contador]
+                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+
+                hombroIzq_x=perfil_pose_keypoints_2d[5*3]
+                hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]
+                codoIzq_x=perfil_pose_keypoints_2d[6*3]
+                codoIzq_y=perfil_pose_keypoints_2d[6*3+1]
+                muñecaIzq_x=perfil_pose_keypoints_2d[7*3]
+                muñecaIzq_y=perfil_pose_keypoints_2d[7*3+1]
+                hombroDer_x =perfil_pose_keypoints_2d[2*3]
+                hombroDer_y =perfil_pose_keypoints_2d[2*3+1]
+                codoDer_x= perfil_pose_keypoints_2d[3*3]
+                codoDer_y= perfil_pose_keypoints_2d[3*3+1]
+                muñecaDer_x=perfil_pose_keypoints_2d[4*3]
+                muñecaDer_y=perfil_pose_keypoints_2d[4*3+1]
+
+                # para lado izquierdo :
+                
+                m1 = (muñecaIzq_y - hombroIzq_y) / (muñecaIzq_x - hombroIzq_x)
+                n1 = muñecaIzq_y - m1 * muñecaIzq_x
+                supuestoValorCodoIzquierdo= m1 * codoIzq_x + n1
+                valorCodoIzquierdo=codoIzq_y
+
+                m2 = (muñecaDer_y - hombroDer_y) / (muñecaDer_x - hombroDer_x)
+                n2 = muñecaDer_y - m2 * muñecaDer_x
+                supuestoValorCodoDerecho= m2 * codoDer_x + n2
+                valorCodoDerecho= codoDer_y
+
+                if(abs(supuestoValorCodoIzquierdo-valorCodoIzquierdo) < margen and abs(supuestoValorCodoDerecho-valorCodoDerecho) < margen) :
+                    secumple= secumple+1
+
+                contador = contador +1
+
+            if(secumple >= limiteVeces):
+                correcto.append("Extensión de codos al final del movimiento")
+            else: 
+                incorrecto.append("Extienda los codos al final del movimiento")
+
+
+
+
+      
+        elif tip== "SACARCABEZA" : #perfil, oreja,codo eje x
+            contador = 0.8* len(keypointsPerfil)
+            secumple=0
+            limiteVeces=2
+
+            while(contador < len(keypointsPerfil)):
+                archivo_json= 'InfoOpenPose/json/perfilJson/' + keypointsPerfil[contador]
+                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+
+
+                codoIzq_x=perfil_pose_keypoints_2d[6*3]
+                oidoIzq_x=perfil_pose_keypoints_2d[18*3]
+
+                if(codoIzq_x -  oidoIzq_x >= 0) :
+                   secumple=secumple+1
+                contador= contador+1
+
+            if(secumple>=limiteVeces) :
+                correcto.append("Barra queda detrás de la cabeza")
+            else:
+                incorrecto.append("La barra debe quedar ligeramente por detrás de tu cabeza")
 
 
 
 
 
+        elif tip == "MANTENERESPALDARECTA": #cadera-hombro eje y perfil
+            contador=0
+            margen=3
+            limiteVeces=4
 
 
-  #       elif tip== "EXTENSIONCOMPLETACODOS":
+            for keypoint in keypointsPerfil :
+                archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
+                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+
+                hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]
+                caderaIzq_y=perfil_pose_keypoints_2d[12*3+1]
+
+                if(abs(caderaIzq_y-hombroIzq_y) < margen) :
+                    contador = contador +1
 
 
- #        
+            if(contador >= limiteVeces) :
+                incorrecto.append("Mantenga la espalda recta. Para ello piense en sacar pecho mientras realiza el movimiento")
+            else:
+                correcto.append("Espalda recta durante todo el movimiento")                
+
+            
 
 
-   #      elif tip == "RODILLASSIGUENLINEAPIES":
 
-  #       elif tip == "MANTENERESPALDARECTA":
-
-    #     
-
-      #   elif tip == "CODOSALTOSPOSICIONFRONTRACK":
         
 
 
-   #      elif tip == "ROMPERELPARALELO":
         
-   #      elif tip == "PESODISTRIBUIDOENTODOELPIE":
+
             
             
 
