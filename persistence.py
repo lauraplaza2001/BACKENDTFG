@@ -17,27 +17,21 @@ class Dificultad(Enum):
 
 class Tips(Enum):
     ANCHURAPIESCADERA= "ANCHURAPIESCADERA"
-    ANCHURAPIESHOMBROS= "ANCHURAPIESHOMBROS"
     ANCHURAABIERTOAGARREBARRA= "ANCHURAABIERTOAGARREBARRA"
     ANCHURACERRADOAGARREBARRA= "ANCHURACERRADOAGARREBARRA"
-    EXTENSIONCOMPLETACADERAYRODILLAS= "EXTENSIONCOMPLETACADERAYRODILLAS"
+    EXTENSIONCADERA= "EXTENSIONCADERA"
+    EXTENSIONRODILLAS = "EXTENSIONRODILLAS"
     EXTENSIONCOMPLETACODOS = "EXTENSIONCOMPLETACODOS"
     BARRAPEGADACUERPO = "BARRAPEGADACUERPO"
     RODILLASSIGUENLINEAPIES = "RODILLASSIGUENLINEAPIES"
-    MANTENERESPALDARECTA = "MANTENERESPALDARECTA"
+    MANTENERESPALDARECTADESDESUELO = "MANTENERESPALDARECTADESDESUELO"
+    MANTENERESPALDARECTADESDENOSUELO = "MANTENERESPALDARECTADESDENOSUELO"
     BARRAAPOYADAHOMBROS = "BARRAAPOYADAHOMBROS"
     CODOSALTOSPOSICIONFRONTRACK = "CODOSALTOSPOSICIONFRONTRACK"
     BARRASUBEVERTICALMENTE = "BARRASUBEVERTICALMENTE"
     ROMPERELPARALELO = "ROMPERELPARALELO"
     PESODISTRIBUIDOENTODOELPIE = "PESODISTRIBUIDOENTODOELPIE"
     SACARCABEZA="SACARCABEZA"
-
-class Usuario(BaseModel):
-    id : Union[str,None] = None
-    email: str
-    rol: Rol
-    token: str
-
 
 class GruposMusuclares(Enum):
     PIERNAS = "PIERNAS"
@@ -46,6 +40,26 @@ class GruposMusuclares(Enum):
     HOMBROS = "HOMBROS"
     PECHO = "PECHO"
     ABDOMEN = "ABDOMEN"  
+
+
+
+class Usuario(BaseModel):
+    id : Union[str,None] = None
+    email: str
+    rol: Rol
+    nombre : str
+  #  token: str
+
+
+class Ejercicio2(BaseModel):
+    nombre: str
+    descripcion: str
+    dificultad : Dificultad
+    video : str
+    foto : str 
+    tips : List[Tips]
+    gruposMusculares: List[GruposMusuclares]
+
 
 class Ejercicio(BaseModel) :
     id : Union[str,None] = None
@@ -68,6 +82,7 @@ class Informe(BaseModel) :
 
 class InformeAux(BaseModel) :
     idUsuario : Union[str,None] = None
+    emailUsuario : Union[str,None] = None
     idEjercicio : Union[str,None] = None
     videoPerfil : Union[str,None] = None
     videoFrontal : Union[str,None] = None

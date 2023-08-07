@@ -1,3 +1,4 @@
-import os
+grupos_musculares = ["PIERNAS,BRAZOS"]
 
-os.system('python probandoCargarJson.py')
+gruposMuscularesSplit= grupos_musculares.split(',') if grupos_musculares else []
+print(gruposMuscularesSplit)

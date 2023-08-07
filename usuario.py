@@ -38,21 +38,32 @@ api.add_middleware(
 
 
 
-
-    
 def parse_json(data):
     return json.loads(json_util.dumps(data))
 
 
 #   Permite crear un usuario
 @api.post("/usuarios/crear/",status_code=201)
-async def crearEjercicio(usuarioIn : Usuario) :
+async def crearUsuario(usuarioIn : Usuario) :
     usuario = {
-       
+        "nombre" : usuarioIn.nombre,
         "email" : usuarioIn.email,
         "rol" : Rol.USUARIO.value,
         "token" : usuarioIn.token
       
+    }
+
+    db.usuario.insert_one(usuario)
+    return({"mensaje":"Usuario creado correctamente"})
+
+
+#   Permite crear un usuario
+@api.post("/usuarios/crear2",status_code=201)
+async def crearUsuario(usuarioIn : Usuario) :
+    usuario = {
+        "nombre" : usuarioIn.nombre,
+        "email" : usuarioIn.email,
+        "rol" : usuarioIn.rol.value 
     }
 
     db.usuario.insert_one(usuario)
@@ -109,4 +120,32 @@ async def buscarUsuarioEmail(email : str):
     return usuario
 
 
+@api.get("/usuarios/filter/nombre/{nombre}")
+async def filtroNombre(nombre: str):
+    usuarios = []
+    cursor = db.usuario.find()
+    for doc in cursor:
+        if nombre.casefold() in doc['nombre'].casefold():
+            usuarios.append(parse_json(doc))
+    return usuarios
 
+
+@api.delete("/usuarios/eliminar/{id}")                      
+async def eliminarUsuario(id : str, response : Response):
+    usuario =  parse_json(db.usuario.find_one_and_delete({"_id" : ObjectId(id)}))
+
+       
+    if usuario == None :
+        response.status_code = 404  
+        return {"message": "Item no encontrado" }
+    else:
+        print(usuario)
+        return {"mensaje" : "Usuario borrado con éxito"}
+                                             
+ 
+
+@api.put("/usuarios/editar", status_code=201)
+async def editarUsuario(usuarioIn: Usuario, response : Response):
+    usuario = parse_json(db.usuario.find_one_and_update({"nombre": usuarioIn.nombre, "email" : usuarioIn.email}, {"$set" : {"rol": usuarioIn.rol.value}}, upsert=False))
+
+    return usuario

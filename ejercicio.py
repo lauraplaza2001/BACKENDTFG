@@ -11,6 +11,7 @@ from persistence import Ejercicio
 from persistence import Tips
 from persistence import Dificultad
 from typing import List
+from persistence import GruposMusuclares
 
 
 
@@ -43,30 +44,8 @@ def parse_json(data):
     return json.loads(json_util.dumps(data))
 
 
-#   Permite crear un ejercicio 
-@api.post("/ejercicio/crear/",status_code=201)
-async def crearEjercicio(ejercicioIn : Ejercicio) :
-    tips = []
-    gruposMusculares = []
 
-    for tip in ejercicioIn.tips:
-        tips.append(tip.value)
-   
-    for grupoMuscular in ejercicioIn.gruposMusculares:
-        gruposMusculares.append(grupoMuscular.value)
-    
-    ejercicio = {
-        "nombre" : ejercicioIn.nombre,
-        "descripcion" : ejercicioIn.descripcion,
-        "dificultad" : ejercicioIn.dificultad.value,
-        "video" : ejercicioIn.video,
-        "foto" : ejercicioIn.foto,
-        "tips": tips,
-        "gruposMusculares": gruposMusculares
-    }
 
-    db.ejercicio.insert_one(ejercicio)
-    return({"mensaje":"Ejercicio creado correctamente"})
 
 
 
@@ -92,26 +71,6 @@ async def buscarEjercicioId(id : str):
 
 
 
-    
-
-#   Permite editar un ejercicio de la base de datos 
-@api.put("/ejercicios/editar",status_code=201)
-async def editarEjercicio(ejercicioIn: Ejercicio, response: Response) :
-    # a la izquierda lo que no se puede cambiar, a la derecha lo que si
-    ejercicio = parse_json(db.ejercicio.find_one_and_update({"nombre" : ejercicioIn.nombre}, {"$set" : {"descripcion" : ejercicioIn.descripcion, 
-        "dificultad" : ejercicioIn.dificultad.value, "video" : ejercicioIn.video,  "tips" : ejercicioIn.tips}}, upsert=False))
-
-    if ejercicio == None :
-        response.status_code = 404  
-        return {"message": "Item no encontrado" }
-    else:
-        print(ejercicio)
-        return {"mensaje" : "Ejercicio actualizado con éxito"}
-
-################# CUIDADO CON ESTO ############################ TENGO QUE CAMBIAR LA CONSULTA
-#filtrar por nombre de ejercicio
-
-
 @api.get("/ejercicios/filter/nombre/{nombre}")
 async def filtroNombre(nombre: str):
     ejercicios = []
@@ -133,20 +92,120 @@ async def filtroDificultad(dificultad: str):
 
 
 #filtrar por grupos musculares
-@api.get("/ejercicios/filter/gruposMusculares")
-async def buscarEjerciciosPorGruposMusculares(grupos_musculares: list):
-    # Convertir la lista de grupos musculares a un conjunto
-    # para eliminar duplicados y facilitar la búsqueda en MongoDB
-    grupos_musculares_set = set(grupos_musculares)
-
-    # Buscar todos los documentos que contengan al menos un grupo muscular de la lista
-    ejercicios = db.ejercicio.find({"gruposMusculares": {"$in": list(grupos_musculares_set)}})
-
-    # Convertir el resultado a una lista de diccionarios
-    ejercicios_list = [ejercicio for ejercicio in ejercicios]
-
-    return ejercicios_list
+@api.get("/ejercicios/filter/gruposMusculares/{gruposmusculares}")
+async def buscarEjerciciosPorGruposMusculares(gruposmusculares: str):
+   # valores_enum = [miembro.value for miembro in GruposMusuclares.__members__.values()]
+   # gruposMusculares = []
+    #for gm in valores_enum:
+     #   if gm in grupos_musculares:
+      #      gruposMusculares = grupos_musculares.append(gm)
 
 
+    ejercicios= []
+    gruposMuscularesSplit = gruposmusculares.split(',') if gruposmusculares else []
+
+  
+
+    ejercicios = parse_json(db.ejercicio.find({"gruposMusculares": {"$all": gruposMuscularesSplit}}))
+    return ejercicios
 
 
+
+
+
+
+
+   # ejercicios = []
+   # ejer= []
+    #ejerciciosConGruposMusculares = []
+    #cursor = list(db.ejercicio.find())
+    #for doc in cursor:
+     #   ejer.append(parse_json(doc))
+
+    #for ej in ejer :
+     #   for gm in gruposMuscularesSplit:
+      #      if gm in cursor.gruposMusculares :
+       #         ejerciciosConGruposMusculares.append(ej)
+
+
+ #   return ejercicios
+
+
+
+
+
+
+#   Permite crear un ejercicio 
+@api.post("/ejercicios/crear",status_code=201)
+async def crearEjercicio(ejercicioIn : Ejercicio) :
+    tips = []
+    gruposMusculares = []
+    
+
+    for tip in ejercicioIn.tips:
+        tips.append(tip.value)
+
+   
+    for grupoMuscular in ejercicioIn.gruposMusculares:
+        gruposMusculares.append(grupoMuscular.value)
+    
+    ejercicio = {
+        "nombre" : ejercicioIn.nombre,
+        "descripcion" : ejercicioIn.descripcion,
+        "dificultad" : ejercicioIn.dificultad.value,
+        "video" : ejercicioIn.video,
+        "foto" : ejercicioIn.foto,
+        "tips": tips,
+        "gruposMusculares": gruposMusculares
+    }
+
+    db.ejercicio.insert_one(ejercicio)
+    return({"mensaje":"Ejercicio creado correctamente"})
+
+
+
+
+    
+#   Permite editar un ejercicio de la base de datos 
+@api.put("/ejercicios/editar",status_code=201)
+async def editarEjercicio(ejercicioIn: Ejercicio, response: Response) :
+    # a la izquierda lo que no se puede cambiar, a la derecha lo que si
+    tips = []
+    gruposMusculares = []
+    for tip in ejercicioIn.tips:
+        tips.append(tip.value)
+   
+    for grupoMuscular in ejercicioIn.gruposMusculares:
+        gruposMusculares.append(grupoMuscular.value)
+
+
+    ejercicio = parse_json(db.ejercicio.find_one_and_update({"nombre" : ejercicioIn.nombre}, {"$set" :
+                                                                                             {"descripcion" : ejercicioIn.descripcion, 
+                                                                                             "dificultad" : ejercicioIn.dificultad.value, 
+                                                                                             "video" : ejercicioIn.video,  
+                                                                                             "tips" : tips,
+                                                                                             "gruposMusculares" : gruposMusculares, 
+                                                                                             "foto" : ejercicioIn.foto,}}, upsert=False))
+
+    if ejercicio == None :
+        response.status_code = 404  
+        return {"message": "Item no encontrado" }
+    else:
+        print(ejercicio)
+        return {"mensaje" : "Ejercicio actualizado con éxito"}
+
+
+
+#   Devuelve un usuario cuya direccion exacta entre por path
+@api.delete("/ejercicios/eliminar/{descripcion}/{nombre}")                      
+async def buscarVivienda(nombre : str, descripcion : str , response : Response):
+    ejercicio =  parse_json(db.ejercicio.find_one_and_delete({"descripcion" : descripcion, "nombre" : nombre}))
+
+       
+    if ejercicio == None :
+        response.status_code = 404  
+        return {"message": "Item no encontrado" }
+    else:
+        print(ejercicio)
+        return {"mensaje" : "Ejercicio actualizado con éxito"}
+ 
