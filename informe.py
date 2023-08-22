@@ -21,6 +21,7 @@ from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 import time
+import config
 
 
 
@@ -139,7 +140,8 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
 
 
     #CUARTO PASO:  accedo a Flask con el /openPose (el resto del enlace es dinamico). Cuando se termine el get, ya tenemos los keypoint guardados en google drive
-    url = "https://5c45-34-91-206-19.ngrok-free.app/openPose"
+
+    url = config.URL + "/openPose"
 
     # Realizar la solicitud GET
     response = requests.get(url)
@@ -191,10 +193,10 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
             secumple= 0
             muyancho=0
             muycerrado=0
-            cotaSuperior=52
-            cotaInferior=22
+            cotaSuperior=53
+            cotaInferior=20
 
-            while contador < 20 :
+            while contador < 16 :
                 archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
                 perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
@@ -206,10 +208,7 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
                 diferenciaIzquierda =abs(tobilloIzq_x - caderaIzq_x)
                 diferenciaDerecha = abs(tobilloDer_x -caderaDer_x)
 
-        #        print("Derecha: ") 
-         #       print(diferenciaDerecha)
-          #      print("Izquierda: " )
-           #     print(diferenciaIzquierda)
+
 
                 if diferenciaIzquierda >=cotaSuperior and diferenciaDerecha >= cotaSuperior :
                     muyancho = muyancho+1 
@@ -220,11 +219,11 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
 
                 contador = contador +1
                         
-            if secumple > (0.65* contador):
+            if secumple > (0.55* contador):
                 correcto.append("Anchura de los pies correcta")
-            elif muycerrado >= (0.65*contador): 
+            elif muycerrado >= (0.55*contador): 
                 incorrecto.append("La anchura de los pies debe ser más abierta. Separe más los pies.")
-            elif muyancho >= (0.65*contador):
+            elif muyancho >= (0.55*contador):
                 incorrecto.append("La anchura de los pies debe ser más cerrada. Junte más los pies.")
             #else correcto.append(nada) si nada superael 65 por ciento, mejor no decir nada, ya q es dudoso
 
@@ -235,7 +234,7 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
             cierraAgarre=0
             abreAgarre=0
             cotaInferior = 77
-            cotaSuperior = 108
+            cotaSuperior = 110
 
 
             while(contador < 10) :
@@ -261,11 +260,11 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
 
                 contador=contador + 1
                     
-            if(secumple >= 0.6 * contador) :
+            if(secumple >= 0.55 * contador) :
                 correcto.append("Agarre ancho ")
-            elif(cierraAgarre > 0.6 * contador):
+            elif(cierraAgarre > 0.55 * contador):
                             incorrecto.append("Agarre demasiado abierto, junte más las manos")
-            elif(abreAgarre > 0.6 *contador):
+            elif(abreAgarre > 0.55 *contador):
                             incorrecto.append("Agarre demasiado cerrado, separe más las manos")     
             #else: correcto.append("Error, no se como es el agarre")
  
@@ -278,7 +277,7 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
             cierraAgarre=0
             abreAgarre=0
             cotaInferior = 25
-            cotaSuperior = 73
+            cotaSuperior = 70
 
 
             while(contador < 10) : # yo lo cambiaria a 15
@@ -316,7 +315,8 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
         elif tip == "BARRAPEGADACUERPO": #muñeca-talon(perfil, solo me intereesa el lado izquierdo)
             contador=0
             nopegada=0
-            cota=100
+            cota=30
+            limiteveces= 5
 
             for keypoint in filesPerfil :
                 archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
@@ -329,7 +329,7 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
                 if( diferencia >  cota):
                     nopegada = nopegada+1
 
-            if nopegada > 4:
+            if nopegada > limiteveces:
                 incorrecto.append("Manten la barra pegada a tu cuerpo durante todo el movimiento")
             else:
                 correcto.append("Barra pegada al cuerpo")   
@@ -341,7 +341,7 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
             nelementos = len(filesPerfil)
             contador= int(0.75*nelementos)
             cotaExtensionCadera=13
-            cota =3 # numero de  vecesque debe cumplirse la extension de cadera 
+            cota = 3 # numero de  vecesque debe cumplirse la extension de cadera 
 
                 
 
@@ -400,25 +400,28 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
         elif tip == "PESODISTRIBUIDOENTODOELPIE": #talon-bigtoe eje y (perfil) # CREO Q SOLO DEBERÍA ANALIZARLO EN MOVIMIENTOS DONDE HAYA UNA LIGERA ROTACIÓ NDE TOBILLO, ESDECIR LAS SENTADILLAS
             pesoPuntillas=0
             pesoTalones=0
-            cota = 2 # +- para que no se considere que se cumple
-            limiteVeces=3 # cuantas veces debe ocurrir para
+            cotaTalon = -8 # +- para que no se considere que se cumple
+            cotaPuntillas= 21
+            limiteVeces=4 # cuantas veces debe ocurrir para
 
-            for keypoint in filesPerfil :
-                archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
+            for keypoint in filesFrontal :
+                archivo_json= 'InfoOpenPose/json/frontalJson/' + keypoint
                 perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
                 talonIzq_y=perfil_pose_keypoints_2d[21*3+1]
                 bigToeIzq_y=perfil_pose_keypoints_2d[19*3+1]
 
                 diferencia= bigToeIzq_y-talonIzq_y
+                print(diferencia)
 
-                if(diferencia > cota) :
+                if(diferencia > cotaPuntillas) :
                     pesoPuntillas= pesoPuntillas+1 
-                elif(diferencia < (-cota)) :
-                    pesoTalones+1
-                  
-                
-                
+                if(diferencia < cotaTalon) :
+                    pesoTalones= pesoTalones+1
+                            
+            print(pesoPuntillas)
+            print(pesoTalones)        
+                            
             if (pesoPuntillas > limiteVeces) :
                 incorrecto.append("Apoye el talón durante todo el movimiento")
             elif (pesoTalones > limiteVeces):
@@ -434,21 +437,23 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
             margen=10 # margen de error
             limiteVeces= 5
             contador = 0 
+            contador2= 0
+            while(contador2 < 0.8* keypointsPerfil) :
 
-            for keypoint in filesPerfil :
-                archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
+                archivo_json= 'InfoOpenPose/json/perfilJson/' + filesPerfil[contador2]
                 perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-                        
+                                    
                 muñecaIzq_x=perfil_pose_keypoints_2d[7*3]
                 codoIzq_x=perfil_pose_keypoints_2d[6*3]
-            
+                        
 
-                            #muñeca - codos es positivo si está bien
+                                        #muñeca - codos es positivo si está bien
                 diferencia= muñecaIzq_x-codoIzq_x
                 print(diferencia)
                 if(diferencia + margen  < 0) :# si la diferencia + la cota me sale negativo es porque la muñeca está adelantando al codo
                     contador = contador+1
-                        
+                contador2= contador2+1
+                                    
 
             if contador >= limiteVeces :
                 incorrecto.append("La barra debe subir lo más vertical posible. La mano no debe adelantar al codo en ningún momento")
@@ -460,13 +465,13 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
 
         
         elif tip == "RODILLASSIGUENLINEAPIES": # rodillas-bigtoes frontal eje x
-            contador=int(0.2*keypointsFrontal)
-            limiteVeces=3
+            contador=int(0.3*keypointsFrontal)
+            limiteVeces=7
             rodillasFuera= 0
             rodillasDentro= 0
             margen = 3
 
-            while (contador < int(0.8*keypointsFrontal)) :
+            while (contador < int(0.75*keypointsFrontal)) :
                 archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
                 perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
@@ -474,31 +479,28 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
                 rodillaIzq_x=perfil_pose_keypoints_2d[13*3]
                 bigToeDer_x=perfil_pose_keypoints_2d[22*3]
                 bigToeIzq_x=perfil_pose_keypoints_2d[19*3]
-                caderaDer_x=perfil_pose_keypoints_2d[9*3]
-                caderaIzq_x=perfil_pose_keypoints_2d[12*3]
+                talon_Izq_x =perfil_pose_keypoints_2d[21*3]
+                talon_Der_x =perfil_pose_keypoints_2d[24*3]
 
-                difCaderas= abs(caderaDer_x-caderaIzq_x)
-                difRodillas=abs(rodillaDer_x-rodillaIzq_x)
-                print("cadera")            
-                diferenciaDer= caderaDer_x-rodillaDer_x
-                diferenciaIzq= rodillaIzq_x - caderaIzq_x
-            #  print(int(diferenciaDer))
-            # print(int(diferenciaIzq))
-                print(difCaderas)
-                print("rodillas")
-                print(difRodillas)
+            #  print("rodilla-bigtoe")
 
-                if(difRodillas >= 3.3*difCaderas) :
-                    rodillasFuera = rodillasFuera+1
-                elif(difRodillas <= 1.5* difCaderas):
-                    rodillasDentro = rodillasDentro +1
+            # print(bigToeIzq_x- rodillaIzq_x)
+                #print("talon-rodilla")
+                print(talon_Der_x-rodillaDer_x)
 
-            
+
+            #pongo primero rodillas dentro, pq rodillas fuera se confunde cuando los pies están muy abiertos
+                if((talon_Der_x-rodillaDer_x <= (-5)) or (rodillaIzq_x-talon_Izq_x <= (-5) )) :
+                        rodillasDentro =rodillasDentro +1 
+
+                elif((rodillaDer_x-bigToeDer_x <= (-5) ) or ( bigToeIzq_x - rodillaIzq_x<= (-5) )) : 
+                    rodillasFuera= rodillasFuera +1
+
+
 
                 contador=contador+1
 
-            print(rodillasFuera)
-            print(rodillasDentro)
+
 
             if rodillasFuera >= limiteVeces:
                 incorrecto.append("Evite llevar las rodillas hacia fuera. Intente que las rodillas sigan la línea del pie")
@@ -578,32 +580,32 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
         elif tip == "CODOSALTOSPOSICIONFRONTRACK": # perfil, codos-hombros eje y
             limiteVeces=4 # si ocurre al menos 4 veces que los codos están mas bajos de la cuenta, entonces, esta mal
             contador = 0 
-            margendedistancia=48
+            margendedistancia=32
+            contador2 = 0
 
-            for keypoint in filesPerfil :
-                archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
+            while(contador2 < 0.3*keypointsPerfil):
+
+                archivo_json= 'InfoOpenPose/json/perfilJson/' + filesPerfil[contador2]
                 perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-                #solo el izquierdo
-                hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]
-                codoIzq_y=perfil_pose_keypoints_2d[6*3+1]
-                diferencia= abs(codoIzq_y-hombroIzq_y)
+                            #solo el izquierdo
+                hombroIzq_x=perfil_pose_keypoints_2d[5*3]
+                codoIzq_x=perfil_pose_keypoints_2d[6*3]
+                diferencia= abs(codoIzq_x-hombroIzq_x)
+                print(diferencia)
 
-                if(diferencia > margendedistancia) :
+                if(diferencia <= margendedistancia) :
                     contador = contador+1
-                        
+                contador2= contador2 +1
+                                    
             if(contador >= limiteVeces):
                 incorrecto.append("Recuerde llevar los codos altos en posición de Front Rack")
             else:
                 correcto.append("Codos altos en posición de Front Rack")
-                
-   
-
-
 
 #al final del movimiento
         elif tip== "EXTENSIONCOMPLETACODOS": # muñeca, hombro, codos, frontal ejes xy
-            margen = 15
-            contador = int(0.8* keypointsFrontal)
+            margen = 20
+            contador = int(0.75* keypointsFrontal)
             secumple=0
             limiteVeces=3
 
@@ -662,10 +664,10 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
         elif tip== "SACARCABEZA" : #perfil, oreja,codo eje x
             contador = int(0.7* len(filesPerfil))
             secumple=0
-            limiteVeces=3
+            limiteVeces=2
 
             while(contador < len(filesPerfil)):
-                archivo_json= 'InfoOpenPose/json/perfilJson/' + filesPerfil[contador]
+                archivo_json= 'InfoOpenPose/json/frontalJson/' + filesPerfil[contador]
                 perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
 
@@ -681,7 +683,7 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
             if(secumple>=limiteVeces) :
                 correcto.append("Barra queda detrás de la cabeza")
             else:
-                incorrecto.append("La barra debe quedar ligeramente por detrás de tu cabeza")
+                incorrecto.append("La barra debe quedar ligeramente por detrás de tu cabeza, es decir, los hombros deben quedar por detrás de las orejas")
 
 
 
@@ -690,7 +692,7 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
 
         elif tip == "MANTENERESPALDARECTADESDESUELO": #cadera-hombro eje y perfil
             contador=0
-            margen=87
+            margen=85
             limiteVeces=5
 
 

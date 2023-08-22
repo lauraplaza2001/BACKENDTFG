@@ -14,11 +14,11 @@ from typing import List
 from persistence import GruposMusuclares
 
 
+client_id= "809085480924-kd4b5cqfatoiirqu60ehktf5u7iobnnu.apps.googleusercontent.com"
+
 
 
 uri = "mongodb+srv://examen:examen@cluster0.iry9pow.mongodb.net/test"
-client_id= "809085480924-kd4b5cqfatoiirqu60ehktf5u7iobnnu.apps.googleusercontent.com"
-
 
 #   Conexión a la BD
 client = pymongo.MongoClient(uri)
@@ -39,14 +39,8 @@ api.add_middleware(
 
 
 
-    
 def parse_json(data):
     return json.loads(json_util.dumps(data))
-
-
-
-
-
 
 
 
@@ -66,8 +60,6 @@ async def buscarEjercicioId(id : str):
     ejercicio = parse_json(db.ejercicio.find_one({"_id": ObjectId(id)}))
     return ejercicio
     
-
-
 
 
 
