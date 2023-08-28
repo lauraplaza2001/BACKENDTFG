@@ -7,10 +7,10 @@ def extract_pose_keypoints_2d(file_path):
     return data['people'][0]['pose_keypoints_2d']
 
 
-dir_path = '../InfoOpenPose/json/frontalJson'
+dir_path = './InfoOpenPose/json/frontalJson'
 filesFrontal = os.listdir(dir_path)
 keypointsFrontal= len(filesFrontal)
-dir_path = '../InfoOpenPose/json/perfilJson'
+dir_path = './InfoOpenPose/json/perfilJson'
 filesPerfil = os.listdir(dir_path)
 keypointsPerfil= len(filesPerfil)
 correcto = []
@@ -27,7 +27,7 @@ limiteVeces=5
 
 
 for keypoint in filesPerfil :
-    archivo_json= '../InfoOpenPose/json/perfilJson/' + keypoint
+    archivo_json= './InfoOpenPose/json/perfilJson/' + keypoint
     perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
     hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]

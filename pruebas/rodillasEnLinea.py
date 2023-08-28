@@ -7,23 +7,23 @@ def extract_pose_keypoints_2d(file_path):
     return data['people'][0]['pose_keypoints_2d']
 
 
-dir_path = '../InfoOpenPose/json/frontalJson'
+dir_path = './InfoOpenPose/json/frontalJson'
 filesFrontal = os.listdir(dir_path)
 keypointsFrontal= len(filesFrontal)
-dir_path = '../InfoOpenPose/json/perfilJson'
+dir_path = './InfoOpenPose/json/perfilJson'
 filesPerfil = os.listdir(dir_path)
 keypointsPerfil= len(filesPerfil)
 correcto = []
 incorrecto= []
 #------- CODIGO A MODIFICAR PARA PROBAR TIPS ----------
 contador=int(0.3*keypointsFrontal)
-limiteVeces=7
+limiteVeces=5
 rodillasFuera= 0
 rodillasDentro= 0
 margen = 3
 
 while (contador < int(0.75*keypointsFrontal)) :
-    archivo_json= '../InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
+    archivo_json= './InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
     perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
     rodillaDer_x=perfil_pose_keypoints_2d[10*3]
@@ -35,16 +35,18 @@ while (contador < int(0.75*keypointsFrontal)) :
 
   #  print("rodilla-bigtoe")
 
-   # print(bigToeIzq_x- rodillaIzq_x)
+    print(bigToeIzq_x- rodillaIzq_x)
+    print( rodillaDer_x - bigToeDer_x)
+   
     #print("talon-rodilla")
-    print(talon_Der_x-rodillaDer_x)
+   # print(talon_Der_x-rodillaDer_x)
 
 
 #pongo primero rodillas dentro, pq rodillas fuera se confunde cuando los pies están muy abiertos
-    if((talon_Der_x-rodillaDer_x <= (-5)) or (rodillaIzq_x-talon_Izq_x <= (-5) )) :
+    if((talon_Der_x-rodillaDer_x <= 0) and (rodillaIzq_x-talon_Izq_x <= 0 )) :
             rodillasDentro =rodillasDentro +1 
 
-    elif((rodillaDer_x-bigToeDer_x <= (-5) ) or ( bigToeIzq_x - rodillaIzq_x<= (-5) )) : 
+    elif((rodillaDer_x-bigToeDer_x <= (-41) ) or ( bigToeIzq_x - rodillaIzq_x <=  (-41) )) : 
         rodillasFuera= rodillasFuera +1
 
 

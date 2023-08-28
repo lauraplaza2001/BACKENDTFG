@@ -16,14 +16,12 @@ keypointsPerfil= len(filesPerfil)
 correcto = []
 incorrecto= []
 #------- CODIGO A MODIFICAR PARA PROBAR TIPS ----------
-
-
 contador=0
 secumple=0
 cierraAgarre=0
 abreAgarre=0
-cotaInferior = 105
-cotaSuperior = 168
+cotaInferior = 47
+cotaSuperior = 180
 
 while(contador < len(filesFrontal) * 0.5) :
     archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
@@ -51,20 +49,22 @@ while(contador < len(filesFrontal) * 0.5) :
     contador=contador + 1
                                         
 if(secumple >= 0.5 * contador) :
-    correcto.append("Agarre ancho ")
+    correcto.append("Agarre cerrado ")
 elif(cierraAgarre > 0.5 * contador):
                 incorrecto.append("Agarre demasiado abierto, junte más las manos")
 elif(abreAgarre > 0.5 *contador):
                 incorrecto.append("Agarre demasiado cerrado, separe más las manos")     
                                 #else: correcto.append("Error, no se como es el agarre")
-print(secumple)    
+
+print(secumple)
 print(abreAgarre)
-print(cierraAgarre)        
-    
+print(cierraAgarre)                   
 
 #-----------------------------
 print(correcto)
 print(incorrecto)
+
+
 
 
 

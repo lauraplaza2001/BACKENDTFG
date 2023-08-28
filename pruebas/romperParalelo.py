@@ -17,37 +17,41 @@ correcto = []
 incorrecto= []
 #------- CODIGO A MODIFICAR PARA PROBAR TIPS ----------
 
-
-
+limiteVeces=3
 contador=0
-margen=130
-limiteVeces=5
+                        #  margen = 1
 
 
 for keypoint in filesPerfil :
-    archivo_json= './InfoOpenPose/json/perfilJson/' + keypoint
+    archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
     perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
-    hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]
+    rodillaIzq_y=perfil_pose_keypoints_2d[13*3+1]
     caderaIzq_y=perfil_pose_keypoints_2d[12*3+1]
-    diferencia = abs(caderaIzq_y-hombroIzq_y)
-    print(diferencia)   
 
-    if(diferencia < margen) :
+    diferencia = rodillaIzq_y-caderaIzq_y
+    print(diferencia)
+
+
+                                #diferencia + margen <0
+    if(diferencia < 0) : # si es menor que 0 está rompiendo el paralelo
         contador = contador +1
-                
+                            
 
-
-if(contador >= limiteVeces) :
-    incorrecto.append("Mantenga la espalda recta. Para ello piense en sacar pecho y mirar al frente mientras realiza el movimiento")
+if(contador >= limiteVeces):
+    correcto.append("Está rompiendo el paralelo correctamente")
 else:
-    correcto.append("Espalda recta durante todo el movimiento")                
-                        
+    incorrecto.append("Baje más profundo, no está rompiendo el paralelo")
 
 print(contador)
+
+
 #-----------------------------
 print(correcto)
 print(incorrecto)
+
+
+
 
 
 

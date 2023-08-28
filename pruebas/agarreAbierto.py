@@ -22,8 +22,8 @@ contador=0
 secumple=0
 cierraAgarre=0
 abreAgarre=0
-cotaInferior = 105
-cotaSuperior = 168
+cotaInferior = 181
+cotaSuperior = 336
 
 while(contador < len(filesFrontal) * 0.5) :
     archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
@@ -65,12 +65,6 @@ print(cierraAgarre)
 #-----------------------------
 print(correcto)
 print(incorrecto)
-
-
-
-
-
-
 
 
 

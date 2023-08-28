@@ -17,40 +17,33 @@ correcto = []
 incorrecto= []
 #------- CODIGO A MODIFICAR PARA PROBAR TIPS ----------
 
-
-
 contador=0
-margen=130
-limiteVeces=5
-
+nopegada=0
+cota=135
+limiteveces= 10
 
 for keypoint in filesPerfil :
     archivo_json= './InfoOpenPose/json/perfilJson/' + keypoint
     perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
-    hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]
-    caderaIzq_y=perfil_pose_keypoints_2d[12*3+1]
-    diferencia = abs(caderaIzq_y-hombroIzq_y)
-    print(diferencia)   
+    muñecaIzq_x=perfil_pose_keypoints_2d[7*3]
+    talonIzq_x=perfil_pose_keypoints_2d[21*3]
+    diferencia = abs(muñecaIzq_x-talonIzq_x) 
+    print(diferencia)
 
-    if(diferencia < margen) :
-        contador = contador +1
-                
+    if( diferencia >  cota):
+        nopegada = nopegada+1
 
-
-if(contador >= limiteVeces) :
-    incorrecto.append("Mantenga la espalda recta. Para ello piense en sacar pecho y mirar al frente mientras realiza el movimiento")
+if nopegada > limiteveces:
+    incorrecto.append("Manten la barra pegada a tu cuerpo durante todo el movimiento")
 else:
-    correcto.append("Espalda recta durante todo el movimiento")                
-                        
+    correcto.append("Barra pegada al cuerpo")   
 
-print(contador)
+print(nopegada)
+print(keypointsPerfil)
 #-----------------------------
 print(correcto)
 print(incorrecto)
-
-
-
 
 
 

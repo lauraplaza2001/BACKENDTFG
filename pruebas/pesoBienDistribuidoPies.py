@@ -7,10 +7,10 @@ def extract_pose_keypoints_2d(file_path):
     return data['people'][0]['pose_keypoints_2d']
 
 
-dir_path = '../InfoOpenPose/json/frontalJson'
+dir_path = './InfoOpenPose/json/frontalJson'
 filesFrontal = os.listdir(dir_path)
 keypointsFrontal= len(filesFrontal)
-dir_path = '../InfoOpenPose/json/perfilJson'
+dir_path = './InfoOpenPose/json/perfilJson'
 filesPerfil = os.listdir(dir_path)
 keypointsPerfil= len(filesPerfil)
 correcto = []
@@ -20,11 +20,11 @@ incorrecto= []
 pesoPuntillas=0
 pesoTalones=0
 cotaTalon = -8 # +- para que no se considere que se cumple
-cotaPuntillas= 21
-limiteVeces=4 # cuantas veces debe ocurrir para
+cotaPuntillas= 53
+limiteVeces=12 # cuantas veces debe ocurrir para
 
-for keypoint in filesFrontal :
-    archivo_json= '../InfoOpenPose/json/frontalJson/' + keypoint
+for keypoint in filesPerfil :
+    archivo_json= './InfoOpenPose/json/perfilJson/' + keypoint
     perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
     talonIzq_y=perfil_pose_keypoints_2d[21*3+1]

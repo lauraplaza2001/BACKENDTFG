@@ -64,7 +64,7 @@ async def devolverInformes():
 
 
 #   Permite crear un informe
-@api.post("/informes/crear/",status_code=201)
+@api.post("/informes/crear",status_code=201)
 async def crearInforme(informeIn : InformeAux) :
     # no estoy segura de si tengo que poner informeIn.idUsuario o informeIn['idUsuario]
     informeAux = {
@@ -115,6 +115,7 @@ def extract_pose_keypoints_2d(file_path):
 
 
 def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, emailUsuario : str) :
+    informe = ""
     #Nos aseguramos que los recursos están limpios:
     os.system('python borrarVideoDrive.py')
     os.system('python borrarCarpetaDrive.py')
@@ -124,6 +125,8 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
 
     #PRIMER PASO : me descargo los videos de cloudinary y les cambio el nombre para ello tengo que hacer un get
     responseFrontal = requests.get(videoFrontal)
+
+    
     with open('videos/frontal.mp4', 'wb') as f:
         f.write(responseFrontal.content)
 
@@ -135,8 +138,10 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
     #SEGUNDO PASO : los subo a google drive
     os.system('python subirVideoDrive.py')
 
-    #TERCER PASO: esperamos unos 25 segundos para asegurarnos de que se ha subido correctamente
+
+    #TERCER PASO: esperamos unos 40 segundos para asegurarnos de que se ha subido correctamente
     time.sleep(40)
+    print("espera finalizada")
 
 
     #CUARTO PASO:  accedo a Flask con el /openPose (el resto del enlace es dinamico). Cuando se termine el get, ya tenemos los keypoint guardados en google drive
@@ -144,623 +149,586 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
     url = config.URL + "/openPose"
 
     # Realizar la solicitud GET
-    response = requests.get(url)
+ 
 
-    # Verificar el código de estado de la respuesta
-    if response.status_code == 200:
-        # La solicitud se completó correctamente
-    # data = response.json()  # Obtener los datos de la respuesta en formato JSON
-        print("Solicitud realizada correctamente")
-    else:
-        # La solicitud no se pudo completar
-        print("La solicitud no se pudo completar. Código de estado:", response.status_code)
-
-
-    time.sleep(40)
-
-    #QUINTO PASO : descargar de Google Drive los keyPoints
-    os.system('python descargarGoogleDrive.py')
-
-    #SEXTO PASO : Analizar los datos dependiendo del movimiento que es (REALMENTE DEPENDE DEL ARRAY DE TIPS)
-    url= "http://localhost:8001/ejercicios/filter/"+ idEjercicio
-    response = requests.get(url)
-    if response.status_code == 200:
-        # hacer algo con la respuesta
-        ejercicio = response.json() # es un objeto
-        print(ejercicio)
-    else:
-        print("La solicitud no se pudo completar. Código de estado:", response.status_code)
-
-
-    #con esto tenemos el numero de archivos, para ver sobre cuantos keypoints comprobamos
-    #tambien tenemos los archivos en forma de array
-    dir_path = 'InfoOpenPose/json/frontalJson'
-    filesFrontal = os.listdir(dir_path)
-    keypointsFrontal= len(filesFrontal)
-    dir_path = 'InfoOpenPose/json/perfilJson'
-    filesPerfil = os.listdir(dir_path)
-    keypointsPerfil= len(filesPerfil)
-    correcto = []
-    incorrecto= []
-
-
-    #EVALUAREMOS PARA CADA TIPO DE DICHO EJERCICIO : 
-##esta mal es anchura de pies , no de rodilla
-    for tip in ejercicio['tips'] :
-
-        if tip == "ANCHURAPIESCADERA" :    #frontal
-            contador= 0 
-            secumple= 0
-            muyancho=0
-            muycerrado=0
-            cotaSuperior=53
-            cotaInferior=20
-
-            while contador < 16 :
-                archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-
-                caderaDer_x=perfil_pose_keypoints_2d[9*3]
-                caderaIzq_x=perfil_pose_keypoints_2d[12*3]
-                tobilloDer_x=perfil_pose_keypoints_2d[11*3]
-                tobilloIzq_x=perfil_pose_keypoints_2d[14*3]
-
-                diferenciaIzquierda =abs(tobilloIzq_x - caderaIzq_x)
-                diferenciaDerecha = abs(tobilloDer_x -caderaDer_x)
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        print("Get realizado ")
+        # Aquí puedes continuar procesando la respuesta si es exitosa
 
 
 
-                if diferenciaIzquierda >=cotaSuperior and diferenciaDerecha >= cotaSuperior :
-                    muyancho = muyancho+1 
-                elif(diferenciaIzquierda <= cotaInferior and diferenciaIzquierda<= cotaInferior):
-                    muycerrado=muycerrado+1 
-                else:
-                    secumple = secumple+1
+        # Verificar el código de estado de la respuesta
+        if response.status_code == 200:
+            # La solicitud se completó correctamente
+        # data = response.json()  # Obtener los datos de la respuesta en formato JSON
+            print("Solicitud realizada correctamente")
+        else:
+            # La solicitud no se pudo completar
+            print("La solicitud no se pudo completar. Código de estado:", response.status_code)
 
-                contador = contador +1
+
+        time.sleep(40)
+        print("espera previa a tener los keypoints finalizada")
+        #QUINTO PASO : descargar de Google Drive los keyPoints
+        os.system('python descargarGoogleDrive.py')
+
+        #SEXTO PASO : Analizar los datos dependiendo del movimiento que es (REALMENTE DEPENDE DEL ARRAY DE TIPS)
+        url= "http://localhost:8001/ejercicios/filter/"+ idEjercicio
+        response = requests.get(url)
+        if response.status_code == 200:
+            # hacer algo con la respuesta
+            ejercicio = response.json() # es un objeto
+            print(ejercicio)
+        else:
+            print("La solicitud no se pudo completar. Código de estado:", response.status_code)
+
+
+        #con esto tenemos el numero de archivos, para ver sobre cuantos keypoints comprobamos
+        #tambien tenemos los archivos en forma de array
+        dir_path = 'InfoOpenPose/json/frontalJson'
+        filesFrontal = os.listdir(dir_path)
+        keypointsFrontal= len(filesFrontal)
+        dir_path = 'InfoOpenPose/json/perfilJson'
+        filesPerfil = os.listdir(dir_path)
+        keypointsPerfil= len(filesPerfil)
+        correcto = []
+        incorrecto= []
+
+
+        #EVALUAREMOS PARA CADA TIPO DE DICHO EJERCICIO : 
+    ##esta mal es anchura de pies , no de rodilla
+        for tip in ejercicio['tips'] :
+
+            if tip == "ANCHURAPIESCADERA" :    #frontal
+                contador= 0 
+                secumple= 0
+                muyancho=0
+                muycerrado=0
+                cotaSuperior=85
+                cotaInferior=16
+
+                while contador < len(filesFrontal) * 0.5 :
+                    archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
+                    perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+
+                    caderaDer_x=perfil_pose_keypoints_2d[9*3]
+                    caderaIzq_x=perfil_pose_keypoints_2d[12*3]
+                    tobilloDer_x=perfil_pose_keypoints_2d[11*3]
+                    tobilloIzq_x=perfil_pose_keypoints_2d[14*3]
+
+                    diferenciaIzquierda =abs(tobilloIzq_x - caderaIzq_x)
+                    diferenciaDerecha = abs(tobilloDer_x -caderaDer_x)
+
+
+
+                    if diferenciaIzquierda >=cotaSuperior and diferenciaDerecha >= cotaSuperior :
+                        muyancho = muyancho+1 
+                    elif(diferenciaIzquierda <= cotaInferior and diferenciaIzquierda<= cotaInferior):
+                        muycerrado=muycerrado+1 
+                    else:
+                        secumple = secumple+1
+
+                    contador = contador +1
+                            
+                if secumple > (0.55* contador):
+                    correcto.append("Anchura de los pies correcta")
+                elif muycerrado >= (0.55*contador): 
+                    incorrecto.append("La anchura de los pies debe ser más abierta. Separe más los pies.")
+                elif muyancho >= (0.55*contador):
+                    incorrecto.append("La anchura de los pies debe ser más cerrada. Junte más los pies.")
+                #else correcto.append(nada) si nada superael 65 por ciento, mejor no decir nada, ya q es dudoso
+
+
+            if tip == "ANCHURAABIERTOAGARREBARRA" : # frontal
+                contador=0
+                secumple=0
+                cierraAgarre=0
+                abreAgarre=0
+                cotaInferior = 181
+                cotaSuperior = 336
+
+                while(contador < len(filesFrontal) * 0.5) :
+                    archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
+                    perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+                    muñecaDer_x=perfil_pose_keypoints_2d[4*3]
+                    muñecaIzq_x=perfil_pose_keypoints_2d[7*3]
+                    hombroDer_x = perfil_pose_keypoints_2d[2*3]
+                    hombroIzq_x = perfil_pose_keypoints_2d[5*3]
+                #   rodillaDer_x=perfil_pose_keypoints_2d[10*3]
+                #  rodillaIzq_x=perfil_pose_keypoints_2d[13*3]
+
+                    diferenciaIzquierda= muñecaIzq_x-hombroIzq_x 
+
+                    print(diferenciaIzquierda)
+                    print(diferenciaDerecha)
+
+                    if(diferenciaDerecha > cotaSuperior and (diferenciaIzquierda > cotaSuperior)) :
+                        cierraAgarre= cierraAgarre+1
+                    elif( diferenciaDerecha < cotaInferior and diferenciaIzquierda < cotaInferior ):
+                        abreAgarre = abreAgarre +1
+                    else: 
+                        secumple = secumple+1
+
+                    contador=contador + 1
+                                        
+                if(secumple >= 0.5 * contador) :
+                    correcto.append("Agarre ancho ")
+                elif(cierraAgarre > 0.5 * contador):
+                                incorrecto.append("Agarre demasiado abierto, junte más las manos")
+                elif(abreAgarre > 0.5 *contador):
+                                incorrecto.append("Agarre demasiado cerrado, separe más las manos")     
+                                #else: correcto.append("Error, no se como es el agarre")
+                    
+    
+
+
+            elif tip == "ANCHURACERRADOAGARREBARRA": 
+                contador=0
+                secumple=0
+                cierraAgarre=0
+                abreAgarre=0
+                cotaInferior = 47
+                cotaSuperior = 180
+
+
+                while(contador < 0.5* len(filesFrontal)) : # yo lo cambiaria a 15
+                    archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
+                    perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+                    muñecaDer_x=perfil_pose_keypoints_2d[4*3]
+                    muñecaIzq_x=perfil_pose_keypoints_2d[7*3]
+                    rodillaDer_x=perfil_pose_keypoints_2d[10*3]
+                    rodillaIzq_x=perfil_pose_keypoints_2d[13*3]
+
+                    diferenciaDerecha= rodillaDer_x-muñecaDer_x
+                    diferenciaIzquierda= muñecaIzq_x-rodillaIzq_x 
+            #       print(diferenciaIzquierda)
+            #       print(diferenciaDerecha)
+
+                    if(diferenciaDerecha > cotaSuperior and (diferenciaIzquierda > cotaSuperior)) :
+                        cierraAgarre= cierraAgarre+1
+                    elif( diferenciaDerecha < cotaInferior and diferenciaIzquierda < cotaInferior ):
+                        abreAgarre = abreAgarre +1
+                    else: 
+                        secumple = secumple+1
+
+                    contador=contador + 1
                         
-            if secumple > (0.55* contador):
-                correcto.append("Anchura de los pies correcta")
-            elif muycerrado >= (0.55*contador): 
-                incorrecto.append("La anchura de los pies debe ser más abierta. Separe más los pies.")
-            elif muyancho >= (0.55*contador):
-                incorrecto.append("La anchura de los pies debe ser más cerrada. Junte más los pies.")
-            #else correcto.append(nada) si nada superael 65 por ciento, mejor no decir nada, ya q es dudoso
+                if(secumple >= 0.5 * contador) : # y aquí pondría 65 por ciento
+                    correcto.append("Agarre cerrado  ")
+                elif(cierraAgarre > 0.5 * contador):
+                                incorrecto.append("Agarre demasiado abierto, junte más las manos")
+                elif(abreAgarre > 0.5 *contador):
+                                incorrecto.append("Agarre demasiado cerrado, separe más las manos")     
+                #else: correcto.append("Error, no se como es el agarre")
+                
 
 
-        if tip == "ANCHURAABIERTOAGARREBARRA" : # frontal
-            contador=0
-            secumple=0
-            cierraAgarre=0
-            abreAgarre=0
-            cotaInferior = 77
-            cotaSuperior = 110
+            elif tip == "BARRAPEGADACUERPO": #muñeca-talon(perfil, solo me intereesa el lado izquierdo)
+                contador=0
+                nopegada=0
+                cota=135
+                limiteveces= 10
+
+                for keypoint in filesPerfil :
+                    archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
+                    perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+
+                    muñecaIzq_x=perfil_pose_keypoints_2d[7*3]
+                    talonIzq_x=perfil_pose_keypoints_2d[21*3]
+                    diferencia = abs(muñecaIzq_x-talonIzq_x) 
+
+                    if( diferencia >  cota):
+                        nopegada = nopegada+1
+
+                if nopegada > limiteveces:
+                    incorrecto.append("Manten la barra pegada a tu cuerpo durante todo el movimiento")
+                else:
+                    correcto.append("Barra pegada al cuerpo")   
 
 
-            while(contador < 10) :
-                archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-                muñecaDer_x=perfil_pose_keypoints_2d[4*3]
-                muñecaIzq_x=perfil_pose_keypoints_2d[7*3]
-                rodillaDer_x=perfil_pose_keypoints_2d[10*3]
-                rodillaIzq_x=perfil_pose_keypoints_2d[13*3]
 
-                diferenciaDerecha= rodillaDer_x-muñecaDer_x
-                diferenciaIzquierda= muñecaIzq_x-rodillaIzq_x 
+            elif tip == "EXTENSIONCADERA": #
+                caderafinal=0
+                nelementos = len(filesPerfil)
+                contador= int(0.75*nelementos)
+                cotaExtensionCadera=16
+                cota = 3 # numero de  vecesque debe cumplirse la extension de cadera 
 
-                print(diferenciaIzquierda)
-                print(diferenciaDerecha)
-
-                if(diferenciaDerecha > cotaSuperior and (diferenciaIzquierda > cotaSuperior)) :
-                    cierraAgarre= cierraAgarre+1
-                elif( diferenciaDerecha < cotaInferior and diferenciaIzquierda < cotaInferior ):
-                    abreAgarre = abreAgarre +1
-                else: 
-                    secumple = secumple+1
-
-                contador=contador + 1
                     
-            if(secumple >= 0.55 * contador) :
-                correcto.append("Agarre ancho ")
-            elif(cierraAgarre > 0.55 * contador):
-                            incorrecto.append("Agarre demasiado abierto, junte más las manos")
-            elif(abreAgarre > 0.55 *contador):
-                            incorrecto.append("Agarre demasiado cerrado, separe más las manos")     
-            #else: correcto.append("Error, no se como es el agarre")
- 
- 
 
+                while (contador < nelementos) :
+                    archivo_json= 'InfoOpenPose/json/perfilJson/' + filesPerfil[contador]
+                    perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
-        elif tip == "ANCHURACERRADOAGARREBARRA": 
-            contador=0
-            secumple=0
-            cierraAgarre=0
-            abreAgarre=0
-            cotaInferior = 25
-            cotaSuperior = 70
+                    hombroIzq_x=perfil_pose_keypoints_2d[5*3]
+                    caderaIzq_x=perfil_pose_keypoints_2d[12*3]
 
-
-            while(contador < 10) : # yo lo cambiaria a 15
-                archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-                muñecaDer_x=perfil_pose_keypoints_2d[4*3]
-                muñecaIzq_x=perfil_pose_keypoints_2d[7*3]
-                rodillaDer_x=perfil_pose_keypoints_2d[10*3]
-                rodillaIzq_x=perfil_pose_keypoints_2d[13*3]
-
-                diferenciaDerecha= rodillaDer_x-muñecaDer_x
-                diferenciaIzquierda= muñecaIzq_x-rodillaIzq_x 
-         #       print(diferenciaIzquierda)
-         #       print(diferenciaDerecha)
-
-                if(diferenciaDerecha > cotaSuperior and (diferenciaIzquierda > cotaSuperior)) :
-                    cierraAgarre= cierraAgarre+1
-                elif( diferenciaDerecha < cotaInferior and diferenciaIzquierda < cotaInferior ):
-                    abreAgarre = abreAgarre +1
-                else: 
-                    secumple = secumple+1
-
-                contador=contador + 1
+                    extCadera = caderaIzq_x-hombroIzq_x
+                    print(extCadera)
                     
-            if(secumple >= 0.6 * contador) : # y aquí pondría 65 por ciento
-                correcto.append("Agarre cerrado  ")
-            elif(cierraAgarre > 0.6 * contador):
-                            incorrecto.append("Agarre demasiado abierto, junte más las manos")
-            elif(abreAgarre > 0.6 *contador):
-                            incorrecto.append("Agarre demasiado cerrado, separe más las manos")     
-            #else: correcto.append("Error, no se como es el agarre")
+                    if( extCadera <= cotaExtensionCadera) :
+                        caderafinal = caderafinal+1
+                    contador = contador+1
+
+
+                if(caderafinal >=cota )  :
+                    correcto.append("Extensión de cadera.") 
+                else:
+                    incorrecto.append("Debe extender la cadera, es decir" + "\n" + " tu hombro debe quedar a la altura de tu cadera.")
+
+
+
+
+            elif tip == "EXTENSIONRODILLAS":#PRACTICAMENTE MISMO CODIGO QEU ARRIBA
+                rodillafinal=0
+                nelementos = len(filesPerfil)
+                contador= int(0.75*nelementos)
+                cotaExtensionRodilla=86
+                cota =3 # numero de  vecesque debe cumplirse la extension de rodillas
+
+                    
+
+                while (contador < nelementos) :
+                    archivo_json= 'InfoOpenPose/json/perfilJson/' + filesPerfil[contador]
+                    perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+
+                    rodillaIzq_x=perfil_pose_keypoints_2d[13*3]
+                    talonIzq_x=perfil_pose_keypoints_2d[21*3]
+
+                    extRodilla = talonIzq_x- rodillaIzq_x
+                    
+                    if( extRodilla <= cotaExtensionRodilla) :
+                        rodillafinal = rodillafinal+1
+                    contador = contador+1
+
+
+                if(rodillafinal >=cota )  :
+                    correcto.append("Extensión de rodilla. ") 
+                else:
+                    incorrecto.append("Debe extender la rodilla.")
+
+
+
+            elif tip == "BARRASUBEVERTICALMENTE": #codo-muñeca, perfil
+                # y recuerda que los hombros deben quedar por detras de la oreja
+                margen=10 # margen de error
+                limiteVeces= 5
+                contador = 0 
+                contador2= 0
+                while(contador2 < 0.8* keypointsPerfil) :
+
+                    archivo_json= 'InfoOpenPose/json/perfilJson/' + filesPerfil[contador2]
+                    perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+                                        
+                    muñecaIzq_x=perfil_pose_keypoints_2d[7*3]
+                    codoIzq_x=perfil_pose_keypoints_2d[6*3]
+                            
+
+                                            #muñeca - codos es positivo si está bien
+                    diferencia= muñecaIzq_x-codoIzq_x
+                    print(diferencia)
+                    if(diferencia + margen  < 0) :# si la diferencia + la cota me sale negativo es porque la muñeca está adelantando al codo
+                        contador = contador+1
+                    contador2= contador2+1
+                                        
+
+                if contador >= limiteVeces :
+                    incorrecto.append("La barra debe subir lo más vertical posible. "   + "\n" +  "La mano no debe adelantar al codo en ningún momento")
+                else:
+                    correcto.append("La barra sube de forma vertical")
+
+
+
+
+            
+            elif tip == "RODILLASSIGUENLINEAPIES": # rodillas-bigtoes frontal eje x
+                contador=int(0.3*keypointsFrontal)
+                limiteVeces=5
+                rodillasFuera= 0
+                rodillasDentro= 0
+                margen = 3
+
+                while (contador < int(0.75*keypointsFrontal)) :
+                    archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
+                    perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+
+                    rodillaDer_x=perfil_pose_keypoints_2d[10*3]
+                    rodillaIzq_x=perfil_pose_keypoints_2d[13*3]
+                    bigToeDer_x=perfil_pose_keypoints_2d[22*3]
+                    bigToeIzq_x=perfil_pose_keypoints_2d[19*3]
+                    talon_Izq_x =perfil_pose_keypoints_2d[21*3]
+                    talon_Der_x =perfil_pose_keypoints_2d[24*3]
+
+                #  print("rodilla-bigtoe")
+
+                # print(bigToeIzq_x- rodillaIzq_x)
+                    #print("talon-rodilla")
+                    print(talon_Der_x-rodillaDer_x)
+
+
+                #pongo primero rodillas dentro, pq rodillas fuera se confunde cuando los pies están muy abiertos
             
 
+                    if((talon_Der_x-rodillaDer_x <= 0 )and (rodillaIzq_x-talon_Izq_x <= 0 )) :
+                            rodillasDentro =rodillasDentro +1 
 
-        elif tip == "BARRAPEGADACUERPO": #muñeca-talon(perfil, solo me intereesa el lado izquierdo)
-            contador=0
-            nopegada=0
-            cota=30
-            limiteveces= 5
-
-            for keypoint in filesPerfil :
-                archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-
-                muñecaIzq_x=perfil_pose_keypoints_2d[7*3]
-                talonIzq_x=perfil_pose_keypoints_2d[21*3]
-                diferencia = abs(muñecaIzq_x-talonIzq_x) 
-
-                if( diferencia >  cota):
-                    nopegada = nopegada+1
-
-            if nopegada > limiteveces:
-                incorrecto.append("Manten la barra pegada a tu cuerpo durante todo el movimiento")
-            else:
-                correcto.append("Barra pegada al cuerpo")   
+                    elif((rodillaDer_x-bigToeDer_x <= (-41) ) and ( bigToeIzq_x - rodillaIzq_x <=  (-41) )) : 
+                        rodillasFuera= rodillasFuera +1
 
 
 
-        elif tip == "EXTENSIONCADERA": #
-            caderafinal=0
-            nelementos = len(filesPerfil)
-            contador= int(0.75*nelementos)
-            cotaExtensionCadera=13
-            cota = 3 # numero de  vecesque debe cumplirse la extension de cadera 
-
-                
-
-            while (contador < nelementos) :
-                archivo_json= 'InfoOpenPose/json/perfilJson/' + filesPerfil[contador]
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-
-                hombroIzq_x=perfil_pose_keypoints_2d[5*3]
-                caderaIzq_x=perfil_pose_keypoints_2d[12*3]
-
-                extCadera = abs(caderaIzq_x-hombroIzq_x)
-                print(extCadera)
-                
-                if( extCadera <= cotaExtensionCadera) :
-                    caderafinal = caderafinal+1
-                contador = contador+1
+                    contador=contador+1
 
 
-            if(caderafinal >=cota )  :
-                correcto.append("Extensión de cadera final") 
-            else:
-                incorrecto.append("Debe extender la cadera al final del movimiento, es decir, tu hombro debe quedar a la altura de tu cadera.")
+
+                if rodillasFuera >= limiteVeces:
+                    incorrecto.append("Evite llevar las rodillas hacia fuera. "  + "\n" + " Intente que las rodillas sigan la línea del pie")
+                elif rodillasDentro >= limiteVeces : 
+                    incorrecto.append("Evite llevar las rodillas hacia dentro. "   + "\n" + " Intente que las rodillas sigan la línea del pie")
+                else:
+                    correcto.append("Las rodillas siguen la línea del pie correctamente")
 
 
 
 
-        elif tip == "EXTENSIONRODILLAS":#PRACTICAMENTE MISMO CODIGO QEU ARRIBA
-            rodillafinal=0
-            nelementos = len(filesPerfil)
-            contador= int(0.75*nelementos)
-            cotaExtensionRodilla=47
-            cota =4 # numero de  vecesque debe cumplirse la extension de rodillas
-
-                
-
-            while (contador < nelementos) :
-                archivo_json= 'InfoOpenPose/json/perfilJson/' + filesPerfil[contador]
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-
-                rodillaIzq_x=perfil_pose_keypoints_2d[13*3]
-                talonIzq_x=perfil_pose_keypoints_2d[21*3]
-
-                extRodilla = abs(rodillaIzq_x-talonIzq_x)
-                
-                if( extRodilla <= cotaExtensionRodilla) :
-                    rodillafinal = rodillafinal+1
-                contador = contador+1
 
 
-            if(rodillafinal >=cota )  :
-                correcto.append("Extensión de rodilla final") 
-            else:
-                incorrecto.append("Debe extender la rodilla al final del movimiento")
+            elif tip == "ROMPERELPARALELO": #cadera-rodilla(eje y) (perfil, solo me interesa lado izquierdo)
+                limiteVeces=3
+                contador=0
+                        #  margen = 1
 
 
-        elif tip == "PESODISTRIBUIDOENTODOELPIE": #talon-bigtoe eje y (perfil) # CREO Q SOLO DEBERÍA ANALIZARLO EN MOVIMIENTOS DONDE HAYA UNA LIGERA ROTACIÓ NDE TOBILLO, ESDECIR LAS SENTADILLAS
-            pesoPuntillas=0
-            pesoTalones=0
-            cotaTalon = -8 # +- para que no se considere que se cumple
-            cotaPuntillas= 21
-            limiteVeces=4 # cuantas veces debe ocurrir para
+                for keypoint in filesPerfil :
+                    archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
+                    perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
-            for keypoint in filesFrontal :
-                archivo_json= 'InfoOpenPose/json/frontalJson/' + keypoint
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+                    rodillaIzq_y=perfil_pose_keypoints_2d[13*3+1]
+                    caderaIzq_y=perfil_pose_keypoints_2d[12*3+1]
 
-                talonIzq_y=perfil_pose_keypoints_2d[21*3+1]
-                bigToeIzq_y=perfil_pose_keypoints_2d[19*3+1]
+                    diferencia = rodillaIzq_y-caderaIzq_y
 
-                diferencia= bigToeIzq_y-talonIzq_y
-                print(diferencia)
 
-                if(diferencia > cotaPuntillas) :
-                    pesoPuntillas= pesoPuntillas+1 
-                if(diferencia < cotaTalon) :
-                    pesoTalones= pesoTalones+1
+                                #diferencia + margen <0
+                    if(diferencia < 0) : # si es menor que 0 está rompiendo el paralelo
+                        contador = contador +1
                             
-            print(pesoPuntillas)
-            print(pesoTalones)        
-                            
-            if (pesoPuntillas > limiteVeces) :
-                incorrecto.append("Apoye el talón durante todo el movimiento")
-            elif (pesoTalones > limiteVeces):
-                incorrecto.append("Apoye la punta de los pies durante todo el movimiento")
-            else:
-                correcto.append("Peso bien distribuido en los pies")
+
+                if(contador >= limiteVeces):
+                    correcto.append("Está rompiendo el paralelo correctamente")
+                else:
+                    incorrecto.append("Baje más profundo, no está rompiendo el paralelo")
 
 
 
+            elif tip == "CODOSALTOSPOSICIONFRONTRACK": # perfil, codos-hombros eje y
+                limiteVeces=4 # si ocurre al menos 4 veces que los codos están mas bajos de la cuenta, entonces, esta mal
+                contador = 0 
+                margendedistancia=54
+                contador2 = 0
 
-        elif tip == "BARRASUBEVERTICALMENTE": #codo-muñeca, perfil
-            # y recuerda que los hombros deben quedar por detras de la oreja
-            margen=10 # margen de error
-            limiteVeces= 5
-            contador = 0 
-            contador2= 0
-            while(contador2 < 0.8* keypointsPerfil) :
+                while(contador2 < 0.3*keypointsPerfil):
 
-                archivo_json= 'InfoOpenPose/json/perfilJson/' + filesPerfil[contador2]
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-                                    
-                muñecaIzq_x=perfil_pose_keypoints_2d[7*3]
-                codoIzq_x=perfil_pose_keypoints_2d[6*3]
-                        
+                    archivo_json= 'InfoOpenPose/json/perfilJson/' + filesPerfil[contador2]
+                    perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+                                #solo el izquierdo
+                    hombroIzq_x=perfil_pose_keypoints_2d[5*3]
+                    codoIzq_x=perfil_pose_keypoints_2d[6*3]
+                    diferencia= abs(codoIzq_x-hombroIzq_x)
+                    print(diferencia)
 
-                                        #muñeca - codos es positivo si está bien
-                diferencia= muñecaIzq_x-codoIzq_x
-                print(diferencia)
-                if(diferencia + margen  < 0) :# si la diferencia + la cota me sale negativo es porque la muñeca está adelantando al codo
-                    contador = contador+1
-                contador2= contador2+1
-                                    
+                    if(diferencia <= margendedistancia) :
+                        contador = contador+1
+                    contador2= contador2 +1
+                                        
+                if(contador >= limiteVeces):
+                    incorrecto.append("Recuerde llevar los codos altos en posición de Front Rack")
+                else:
+                    correcto.append("Codos altos en posición de Front Rack")
 
-            if contador >= limiteVeces :
-                incorrecto.append("La barra debe subir lo más vertical posible. La mano no debe adelantar al codo en ningún momento")
-            else:
-                correcto.append("La barra sube de forma vertical")
+    #al final del movimiento
+            elif tip== "EXTENSIONCOMPLETACODOS": # muñeca, hombro, codos, frontal ejes xy
+                margen = 44
+                contador = int(0.75* keypointsFrontal)
+                secumple=0
+                limiteVeces=3
+
+
+                while(contador < keypointsFrontal):
+                    archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
+                    perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+
+                    hombroIzq_x=perfil_pose_keypoints_2d[5*3]
+                    hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]
+                    codoIzq_x=perfil_pose_keypoints_2d[6*3]
+                    codoIzq_y=perfil_pose_keypoints_2d[6*3+1]
+                    muñecaIzq_x=perfil_pose_keypoints_2d[7*3]
+                    muñecaIzq_y=perfil_pose_keypoints_2d[7*3+1]
+                    hombroDer_x =perfil_pose_keypoints_2d[2*3]
+                    hombroDer_y =perfil_pose_keypoints_2d[2*3+1]
+                    codoDer_x= perfil_pose_keypoints_2d[3*3]
+                    codoDer_y= perfil_pose_keypoints_2d[3*3+1]
+                    muñecaDer_x=perfil_pose_keypoints_2d[4*3]
+                    muñecaDer_y=perfil_pose_keypoints_2d[4*3+1]
+
+                    # para lado izquierdo :
+                                
+                    m1 = (muñecaIzq_y - hombroIzq_y) / (muñecaIzq_x - hombroIzq_x)
+                    n1 = muñecaIzq_y - m1 * muñecaIzq_x
+                    supuestoValorCodoIzquierdo= m1 * codoIzq_x + n1
+                    valorCodoIzquierdo=codoIzq_y
+
+                    m2 = (muñecaDer_y - hombroDer_y) / (muñecaDer_x - hombroDer_x)
+                    n2 = muñecaDer_y - m2 * muñecaDer_x
+                    supuestoValorCodoDerecho= m2 * codoDer_x + n2
+                    valorCodoDerecho= codoDer_y
+
+                    print("Derecha: diferencia)")
+                    print(abs(supuestoValorCodoDerecho-valorCodoDerecho))
+                
+
+                    print("Izquierda:(supuesto valor + valor Real)")
+                    print(abs(supuestoValorCodoIzquierdo-valorCodoIzquierdo))
+
+                    if(abs(supuestoValorCodoIzquierdo-valorCodoIzquierdo) < margen and abs(supuestoValorCodoDerecho-valorCodoDerecho) < margen) :
+                        secumple= secumple+1
+
+                    contador = contador +1
+
+                if(secumple >= limiteVeces):
+                    correcto.append("Extensión de codos.")
+                else: 
+                    incorrecto.append("Extienda los codos, es decir, estire los brazos al completo")
+
 
 
 
 
         
-        elif tip == "RODILLASSIGUENLINEAPIES": # rodillas-bigtoes frontal eje x
-            contador=int(0.3*keypointsFrontal)
-            limiteVeces=7
-            rodillasFuera= 0
-            rodillasDentro= 0
-            margen = 3
+            elif tip== "SACARCABEZA" : #perfil, oreja,codo eje x
+                contador = int(0.7* len(filesPerfil))
+                secumple=0
+                limiteVeces=2
 
-            while (contador < int(0.75*keypointsFrontal)) :
-                archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-
-                rodillaDer_x=perfil_pose_keypoints_2d[10*3]
-                rodillaIzq_x=perfil_pose_keypoints_2d[13*3]
-                bigToeDer_x=perfil_pose_keypoints_2d[22*3]
-                bigToeIzq_x=perfil_pose_keypoints_2d[19*3]
-                talon_Izq_x =perfil_pose_keypoints_2d[21*3]
-                talon_Der_x =perfil_pose_keypoints_2d[24*3]
-
-            #  print("rodilla-bigtoe")
-
-            # print(bigToeIzq_x- rodillaIzq_x)
-                #print("talon-rodilla")
-                print(talon_Der_x-rodillaDer_x)
+                while(contador < len(filesPerfil)):
+                    archivo_json= 'InfoOpenPose/json/perfilJson/' + filesPerfil[contador]
+                    perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
 
-            #pongo primero rodillas dentro, pq rodillas fuera se confunde cuando los pies están muy abiertos
-                if((talon_Der_x-rodillaDer_x <= (-5)) or (rodillaIzq_x-talon_Izq_x <= (-5) )) :
-                        rodillasDentro =rodillasDentro +1 
+                    codoIzq_x=perfil_pose_keypoints_2d[6*3]
+                    oidoIzq_x=perfil_pose_keypoints_2d[18*3]
+                    diferencia= codoIzq_x -  oidoIzq_x
+                    print(diferencia)
 
-                elif((rodillaDer_x-bigToeDer_x <= (-5) ) or ( bigToeIzq_x - rodillaIzq_x<= (-5) )) : 
-                    rodillasFuera= rodillasFuera +1
+                    if(diferencia >= 0) :
+                        secumple=secumple+1
+                    contador= contador+1
 
-
-
-                contador=contador+1
-
-
-
-            if rodillasFuera >= limiteVeces:
-                incorrecto.append("Evite llevar las rodillas hacia fuera. Intente que las rodillas sigan la línea del pie")
-            elif rodillasDentro >= limiteVeces : 
-                incorrecto.append("Evite llevar las rodillas hacia dentro. Intente que las rodillas sigan la línea del pie")
-            else:
-                correcto.append("Las rodillas siguen la línea del pie correctamente")
+                if(secumple>=limiteVeces) :
+                    correcto.append("Barra queda detrás de la cabeza")
+                else:
+                    incorrecto.append("La barra debe quedar ligeramente por detrás de tu cabeza, es decir, "   + "\n" +  " los hombros deben quedar por detrás de las orejas")
 
 
 
 
 
 
-        elif tip == "ROMPERELPARALELO": #cadera-rodilla(eje y) (perfil, solo me interesa lado izquierdo)
-            limiteVeces=3
-            contador=0
-                    #  margen = 1
+            elif tip == "MANTENERESPALDARECTADESDESUELO": #cadera-hombro eje y perfil
+                contador=0
+                margen=85
+                limiteVeces=5
 
 
-            for keypoint in filesPerfil :
-                archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+                for keypoint in filesPerfil :
+                    archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
+                    perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
-                rodillaIzq_y=perfil_pose_keypoints_2d[13*3+1]
-                caderaIzq_y=perfil_pose_keypoints_2d[12*3+1]
+                    hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]
+                    caderaIzq_y=perfil_pose_keypoints_2d[12*3+1]
+                    diferencia = abs(caderaIzq_y-hombroIzq_y)
+                    print(diferencia)
 
-                diferencia = rodillaIzq_y-caderaIzq_y
-
-
-                            #diferencia + margen <0
-                if(diferencia < 0) : # si es menor que 0 está rompiendo el paralelo
-                    contador = contador +1
-                        
-
-            if(contador >= limiteVeces):
-                correcto.append("Está rompiendo el paralelo correctamente")
-            else:
-                incorrecto.append("Baje más profundo, no está rompiendo el paralelo")
+                    if(diferencia < margen) :
+                        contador = contador +1
+                    
 
 
-
-
-
-
-        elif tip== "BARRAAPOYADAHOMBROS": # hombro-muñeca eje y frontal
-            limiteVeces=3
-            contador=0
-            apoyado=0 # nada mas que se cumpla 3 veces que está apoyado, entonces perfecto
-            margen= 27
-
-            while(contador < 0.4* keypointsPerfil) :
-                archivo_json= 'InfoOpenPose/json/perfilJson/' + filesPerfil[contador]
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-
-            
-                hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]
-                muñecaIzq_y=perfil_pose_keypoints_2d[7*3+1]
-
-            
-                diferenciaIzquierda= hombroIzq_y-muñecaIzq_y
-
-                print(diferenciaIzquierda)
-                            #pongo un or porque a veces no pilla bien a la muñeca, realmente es muy extraño qeu una persona lo apoye de un lado y del otro no
-                if(diferenciaIzquierda <= margen ) :
-                    apoyado=apoyado+1
-
-                contador=contador+1
-                        
-            if(apoyado >= limiteVeces):
-                correcto.append("Barra apoyada en los hombros en posición de front rack")
-            else:
-                incorrecto.append("Apoye la barra en los hombros en posición de inicio")
-
-
-
-
-        elif tip == "CODOSALTOSPOSICIONFRONTRACK": # perfil, codos-hombros eje y
-            limiteVeces=4 # si ocurre al menos 4 veces que los codos están mas bajos de la cuenta, entonces, esta mal
-            contador = 0 
-            margendedistancia=32
-            contador2 = 0
-
-            while(contador2 < 0.3*keypointsPerfil):
-
-                archivo_json= 'InfoOpenPose/json/perfilJson/' + filesPerfil[contador2]
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-                            #solo el izquierdo
-                hombroIzq_x=perfil_pose_keypoints_2d[5*3]
-                codoIzq_x=perfil_pose_keypoints_2d[6*3]
-                diferencia= abs(codoIzq_x-hombroIzq_x)
-                print(diferencia)
-
-                if(diferencia <= margendedistancia) :
-                    contador = contador+1
-                contador2= contador2 +1
-                                    
-            if(contador >= limiteVeces):
-                incorrecto.append("Recuerde llevar los codos altos en posición de Front Rack")
-            else:
-                correcto.append("Codos altos en posición de Front Rack")
-
-#al final del movimiento
-        elif tip== "EXTENSIONCOMPLETACODOS": # muñeca, hombro, codos, frontal ejes xy
-            margen = 20
-            contador = int(0.75* keypointsFrontal)
-            secumple=0
-            limiteVeces=3
-
-
-            while(contador < keypointsFrontal):
-                archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-
-                hombroIzq_x=perfil_pose_keypoints_2d[5*3]
-                hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]
-                codoIzq_x=perfil_pose_keypoints_2d[6*3]
-                codoIzq_y=perfil_pose_keypoints_2d[6*3+1]
-                muñecaIzq_x=perfil_pose_keypoints_2d[7*3]
-                muñecaIzq_y=perfil_pose_keypoints_2d[7*3+1]
-                hombroDer_x =perfil_pose_keypoints_2d[2*3]
-                hombroDer_y =perfil_pose_keypoints_2d[2*3+1]
-                codoDer_x= perfil_pose_keypoints_2d[3*3]
-                codoDer_y= perfil_pose_keypoints_2d[3*3+1]
-                muñecaDer_x=perfil_pose_keypoints_2d[4*3]
-                muñecaDer_y=perfil_pose_keypoints_2d[4*3+1]
-
-                # para lado izquierdo :
+                if(contador >= limiteVeces) :
+                    incorrecto.append("Mantenga la espalda recta. Para ello piense en sacar pecho "   + "\n" + "   y mirar al frente mientras realiza el movimiento")
+                else:
+                    correcto.append("Espalda recta durante todo el movimiento")                
                             
-                m1 = (muñecaIzq_y - hombroIzq_y) / (muñecaIzq_x - hombroIzq_x)
-                n1 = muñecaIzq_y - m1 * muñecaIzq_x
-                supuestoValorCodoIzquierdo= m1 * codoIzq_x + n1
-                valorCodoIzquierdo=codoIzq_y
 
-                m2 = (muñecaDer_y - hombroDer_y) / (muñecaDer_x - hombroDer_x)
-                n2 = muñecaDer_y - m2 * muñecaDer_x
-                supuestoValorCodoDerecho= m2 * codoDer_x + n2
-                valorCodoDerecho= codoDer_y
 
-                print("Derecha: diferencia)")
-                print(abs(supuestoValorCodoDerecho-valorCodoDerecho))
+
+            elif tip == "MANTENERESPALDARECTADESDENOSUELO": #cadera-hombro eje y perfil
+                contador=0
+                margen=130
+                limiteVeces=5
+
+
+                for keypoint in filesPerfil :
+                    archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
+                    perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+
+                    hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]
+                    caderaIzq_y=perfil_pose_keypoints_2d[12*3+1]
+                    diferencia = abs(caderaIzq_y-hombroIzq_y)
+                    print(diferencia)
+
+                    if(diferencia < margen) :
+                        contador = contador +1
+                    
+
+
+                if(contador >= limiteVeces) :
+                    incorrecto.append("Mantenga la espalda recta. Para ello piense en sacar pecho  "   + "\n" + " y mirar al frente mientras realiza el movimiento")
+                else:
+                    correcto.append("Espalda recta durante todo el movimiento")                
+                                        
+
+
+
             
+        
+        #SEPTIMO PASO : generamos un informe  en formato pdf y le mandamos un correo con el informe
+        informe = generarInforme(correcto,incorrecto)
 
-                print("Izquierda:(supuesto valor + valor Real)")
-                print(abs(supuestoValorCodoIzquierdo-valorCodoIzquierdo))
-
-                if(abs(supuestoValorCodoIzquierdo-valorCodoIzquierdo) < margen and abs(supuestoValorCodoDerecho-valorCodoDerecho) < margen) :
-                    secumple= secumple+1
-
-                contador = contador +1
-
-            if(secumple >= limiteVeces):
-                correcto.append("Extensión de codos al final del movimiento")
-            else: 
-                incorrecto.append("Extienda los codos al final del movimiento")
-
-
-
-
-
-      
-        elif tip== "SACARCABEZA" : #perfil, oreja,codo eje x
-            contador = int(0.7* len(filesPerfil))
-            secumple=0
-            limiteVeces=2
-
-            while(contador < len(filesPerfil)):
-                archivo_json= 'InfoOpenPose/json/frontalJson/' + filesPerfil[contador]
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
+        destinatario = emailUsuario
+        asunto = 'Funcional Training Assistance'
+        mensaje_texto = '¡Ya está disponible tu informe generado por Functional Training Assistance!'
+        archivo_adjunto = 'informe.pdf'
+        enviar_correo(destinatario, asunto, mensaje_texto, archivo_adjunto)
+    except requests.exceptions.RequestException as e:
+        print("Error al ejecutar OpenPose:", e)
+        destinatario = emailUsuario
+        asunto = 'Funcional Training Assistance'
+        mensaje_texto = '¡Error al generar tu informe, vuelva a intentarlo!'
+        generarInformeError()
+        archivo_adjunto = 'informe.pdf'
+        enviar_correo(emailUsuario,asunto,mensaje_texto,archivo_adjunto)
+        print("")
 
 
-                codoIzq_x=perfil_pose_keypoints_2d[6*3]
-                oidoIzq_x=perfil_pose_keypoints_2d[18*3]
-                diferencia= codoIzq_x -  oidoIzq_x
-                print(diferencia)
-
-                if(diferencia >= 0) :
-                    secumple=secumple+1
-                contador= contador+1
-
-            if(secumple>=limiteVeces) :
-                correcto.append("Barra queda detrás de la cabeza")
-            else:
-                incorrecto.append("La barra debe quedar ligeramente por detrás de tu cabeza, es decir, los hombros deben quedar por detrás de las orejas")
-
-
-
-
-
-
-        elif tip == "MANTENERESPALDARECTADESDESUELO": #cadera-hombro eje y perfil
-            contador=0
-            margen=85
-            limiteVeces=5
-
-
-            for keypoint in filesPerfil :
-                archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-
-                hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]
-                caderaIzq_y=perfil_pose_keypoints_2d[12*3+1]
-                diferencia = abs(caderaIzq_y-hombroIzq_y)
-                print(diferencia)
-
-                if(diferencia < margen) :
-                    contador = contador +1
-                
-
-
-            if(contador >= limiteVeces) :
-                incorrecto.append("Mantenga la espalda recta. Para ello piense en sacar pecho y mirar al frente mientras realiza el movimiento")
-            else:
-                correcto.append("Espalda recta durante todo el movimiento")                
-                        
-
-
-
-        elif tip == "MANTENERESPALDARECTADESDENOSUELO": #cadera-hombro eje y perfil
-            contador=0
-            margen=130
-            limiteVeces=5
-
-
-            for keypoint in filesPerfil :
-                archivo_json= 'InfoOpenPose/json/perfilJson/' + keypoint
-                perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
-
-                hombroIzq_y=perfil_pose_keypoints_2d[5*3+1]
-                caderaIzq_y=perfil_pose_keypoints_2d[12*3+1]
-                diferencia = abs(caderaIzq_y-hombroIzq_y)
-                print(diferencia)
-
-                if(diferencia < margen) :
-                    contador = contador +1
-                
-
-
-            if(contador >= limiteVeces) :
-                incorrecto.append("Mantenga la espalda recta. Para ello piense en sacar pecho y mirar al frente mientras realiza el movimiento")
-            else:
-                correcto.append("Espalda recta durante todo el movimiento")                
-                                    
-
-
-
-           
-    
-    #SEPTIMO PASO : generamos un informe  en formato pdf y le mandamos un correo con el informe
-    informe = generarInforme(correcto,incorrecto)
-
-    destinatario = emailUsuario
-    asunto = 'Funcional Training Assistance'
-    mensaje_texto = '¡Ya está disponible tu informe generado por Functional Training Assistance!'
-    archivo_adjunto = 'informe.pdf'
-    enviar_correo(destinatario, asunto, mensaje_texto, archivo_adjunto)
-    
 
     # en informe tenemos un string (contenido del pdf)
     return informe
 
+
+def generarInformeError() : 
+    informe = "Error en el servidor al generar el informe, vuelva a intentarlo"
+
+    c = canvas.Canvas("informe.pdf")
+    c.setFont("Helvetica", 14)
+    y = 750
+    for line in informe.splitlines():
+        c.drawString(100, y, line)
+        y -= 20
+    c.save()
+    return informe
 
 
 
@@ -785,6 +753,7 @@ def generarInforme(correcto, incorrecto):
         y -= 20
     c.save()
     return informe
+
 
 
 
