@@ -45,7 +45,7 @@ def parse_json(data):
 
 
 #   Permite crear un usuario
-@api.post("/usuarios/crear",status_code=201)
+@api.post("/usuarios/crear2",status_code=201)
 async def crearUsuario(usuarioIn : Usuario) :
     usuario = {
         "nombre" : usuarioIn.nombre,

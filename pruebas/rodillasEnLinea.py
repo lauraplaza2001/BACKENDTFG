@@ -24,8 +24,8 @@ rodillasFuera= 0
 rodillasDentro= 0
 margen = 3
 
-while (contador < int(0.73*keypointsPerfil)) :
-    archivo_json= './InfoOpenPose/json/perfilJson/' + filesPerfil[contador]
+while (contador < int(0.73*keypointsFrontal)) :
+    archivo_json= './InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
     perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
     rodillaDer_x=perfil_pose_keypoints_2d[10*3]
@@ -49,7 +49,7 @@ while (contador < int(0.73*keypointsPerfil)) :
     if((talon_Der_x-rodillaDer_x <= (-5)) and (rodillaIzq_x-talon_Izq_x <= (-5) )) :
             rodillasDentro =rodillasDentro +1 
 
-    if((rodillaDer_x-bigToeDer_x <= (-52) ) and ( bigToeIzq_x - rodillaIzq_x <=  (-52) )) : 
+    if((rodillaDer_x-bigToeDer_x <= (-51) ) or ( bigToeIzq_x - rodillaIzq_x <=  (-51) )) : 
         rodillasFuera= rodillasFuera +1
 
 

@@ -138,8 +138,8 @@ def generarResultados(idEjercicio : str, videoFrontal : str, videoPerfil: str, e
     os.system('python subirVideoDrive.py')
 
 
-    #TERCER PASO: esperamos unos 40 segundos para asegurarnos de que se ha subido correctamente
-    time.sleep(40)
+    #TERCER PASO: esperamos unos 55 segundos para asegurarnos de que se ha subido correctamente
+    time.sleep(55)
     print("espera finalizada")
 
 
