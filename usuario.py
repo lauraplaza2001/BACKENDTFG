@@ -16,6 +16,7 @@ from persistence import Usuario
 
 
 
+
 uri = "mongodb+srv://examen:examen@cluster0.iry9pow.mongodb.net/test"
 client_id= "809085480924-kd4b5cqfatoiirqu60ehktf5u7iobnnu.apps.googleusercontent.com"
 
@@ -62,7 +63,10 @@ async def crearUsuario(usuarioIn : Usuario) :
 async def logIn(token: str):
     request = requestsG.Request()
 
-    id_info = id_token.verify_oauth2_token(token, request, client_id, 0)
+
+
+    # Verifica el token con la configuración
+    id_info = id_token.verify_oauth2_token(token, request, client_id, 60)
 
     nombreUsuario = id_info["given_name"]+" "+id_info["family_name"]
     usuario = parse_json(db.usuario.find_one({"nombre" : nombreUsuario}))
