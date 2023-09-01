@@ -15,11 +15,10 @@ filesPerfil = os.listdir(dir_path)
 keypointsPerfil= len(filesPerfil)
 correcto = []
 incorrecto= []
-#------- CODIGO A MODIFICAR PARA PROBAR TIPS ----------
+
 
 limiteVeces=3
 contador=0
-                        #  margen = 1
 
 
 for keypoint in filesPerfil :
@@ -33,7 +32,6 @@ for keypoint in filesPerfil :
     print(diferencia)
 
 
-                                #diferencia + margen <0
     if(diferencia < 0) : # si es menor que 0 está rompiendo el paralelo
         contador = contador +1
                             
@@ -46,7 +44,6 @@ else:
 print(contador)
 
 
-#-----------------------------
 print(correcto)
 print(incorrecto)
 

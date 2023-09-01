@@ -6,7 +6,6 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 
-# If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/gmail.send']
 
 
@@ -52,14 +51,14 @@ def delete_file(file_name, folder_name):
 
 
 def main():
-    folder_name = 'InfoOpenPose'  # Enter the name of the folder where the video file is located
-    file_name = 'frontal.mp4'  # Enter the name of the video file you want to delete
+    folder_name = 'InfoOpenPose'  # nombre carpeta
+    file_name = 'frontal.mp4'  #nombre archivo
     delete_file(file_name, folder_name)
-    file_name = 'perfil.mp4'  # Enter the name of the video file you want to delete
+    file_name = 'perfil.mp4'  
     delete_file(file_name, folder_name)
-    file_name = 'frontal-openpose.mp4'  # Enter the name of the video file you want to delete
+    file_name = 'frontal-openpose.mp4' 
     delete_file(file_name, folder_name)
-    file_name = 'perfil-openpose.mp4'  # Enter the name of the video file you want to delete
+    file_name = 'perfil-openpose.mp4' 
     delete_file(file_name, folder_name)
  
 

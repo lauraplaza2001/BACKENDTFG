@@ -15,7 +15,7 @@ filesPerfil = os.listdir(dir_path)
 keypointsPerfil= len(filesPerfil)
 correcto = []
 incorrecto= []
-#------- CODIGO A MODIFICAR PARA PROBAR TIPS ----------
+
 
 contador= 0 
 secumple= 0
@@ -54,12 +54,10 @@ elif muycerrado >= (0.55*contador):
     incorrecto.append("La anchura de los pies debe ser más abierta. Separe más los pies.")
 elif muyancho >= (0.55*contador):
     incorrecto.append("La anchura de los pies debe ser más cerrada. Junte más los pies.")
-                #else correcto.append(nada) si nada superael 65 por ciento, mejor no decir nada, ya q es dudoso
-print(secumple)
+               
 print(muycerrado)
 print(muyancho)
 
-#-----------------------------
 print(correcto)
 print(incorrecto)
 

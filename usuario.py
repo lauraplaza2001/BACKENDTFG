@@ -42,23 +42,10 @@ def parse_json(data):
     return json.loads(json_util.dumps(data))
 
 
-#   Permite crear un usuario
-@api.post("/usuarios/crear/",status_code=201)
-async def crearUsuario(usuarioIn : Usuario) :
-    usuario = {
-        "nombre" : usuarioIn.nombre,
-        "email" : usuarioIn.email,
-        "rol" : Rol.USUARIO.value,
-        "token" : usuarioIn.token
-      
-    }
-
-    db.usuario.insert_one(usuario)
-    return({"mensaje":"Usuario creado correctamente"})
 
 
 #   Permite crear un usuario
-@api.post("/usuarios/crear2",status_code=201)
+@api.post("/usuarios/crear",status_code=201)
 async def crearUsuario(usuarioIn : Usuario) :
     usuario = {
         "nombre" : usuarioIn.nombre,

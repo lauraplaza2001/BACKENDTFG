@@ -15,9 +15,6 @@ from persistence import GruposMusuclares
 
 
 client_id= "809085480924-kd4b5cqfatoiirqu60ehktf5u7iobnnu.apps.googleusercontent.com"
-
-
-
 uri = "mongodb+srv://examen:examen@cluster0.iry9pow.mongodb.net/test"
 
 #   Conexión a la BD
@@ -86,42 +83,10 @@ async def filtroDificultad(dificultad: str):
 #filtrar por grupos musculares
 @api.get("/ejercicios/filter/gruposMusculares/{gruposmusculares}")
 async def buscarEjerciciosPorGruposMusculares(gruposmusculares: str):
-   # valores_enum = [miembro.value for miembro in GruposMusuclares.__members__.values()]
-   # gruposMusculares = []
-    #for gm in valores_enum:
-     #   if gm in grupos_musculares:
-      #      gruposMusculares = grupos_musculares.append(gm)
-
-
     ejercicios= []
     gruposMuscularesSplit = gruposmusculares.split(',') if gruposmusculares else []
-
-  
-
     ejercicios = parse_json(db.ejercicio.find({"gruposMusculares": {"$all": gruposMuscularesSplit}}))
     return ejercicios
-
-
-
-
-
-
-
-   # ejercicios = []
-   # ejer= []
-    #ejerciciosConGruposMusculares = []
-    #cursor = list(db.ejercicio.find())
-    #for doc in cursor:
-     #   ejer.append(parse_json(doc))
-
-    #for ej in ejer :
-     #   for gm in gruposMuscularesSplit:
-      #      if gm in cursor.gruposMusculares :
-       #         ejerciciosConGruposMusculares.append(ej)
-
-
- #   return ejercicios
-
 
 
 
@@ -161,7 +126,6 @@ async def crearEjercicio(ejercicioIn : Ejercicio) :
 #   Permite editar un ejercicio de la base de datos 
 @api.put("/ejercicios/editar",status_code=201)
 async def editarEjercicio(ejercicioIn: Ejercicio, response: Response) :
-    # a la izquierda lo que no se puede cambiar, a la derecha lo que si
     tips = []
     gruposMusculares = []
     for tip in ejercicioIn.tips:

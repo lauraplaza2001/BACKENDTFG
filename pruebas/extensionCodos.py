@@ -15,8 +15,6 @@ filesPerfil = os.listdir(dir_path)
 keypointsPerfil= len(filesPerfil)
 correcto = []
 incorrecto= []
-#------- CODIGO A MODIFICAR PARA PROBAR TIPS ----------
-
 
 
 margen = 44
@@ -25,7 +23,7 @@ secumple=0
 limiteVeces=3
 
 
-while(contador < keypointsFrontal):
+while(contador < keypointsPerfil):
     archivo_json= './InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
     perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
@@ -42,7 +40,7 @@ while(contador < keypointsFrontal):
     muñecaDer_x=perfil_pose_keypoints_2d[4*3]
     muñecaDer_y=perfil_pose_keypoints_2d[4*3+1]
 
-                    # para lado izquierdo :
+    # para lado izquierdo :
                                 
     m1 = (muñecaIzq_y - hombroIzq_y) / (muñecaIzq_x - hombroIzq_x)
     n1 = muñecaIzq_y - m1 * muñecaIzq_x
@@ -74,7 +72,6 @@ else:
 print(secumple)
 
 
-#-----------------------------
 print(correcto)
 print(incorrecto)
 

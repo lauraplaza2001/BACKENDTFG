@@ -15,15 +15,17 @@ filesPerfil = os.listdir(dir_path)
 keypointsPerfil= len(filesPerfil)
 correcto = []
 incorrecto= []
-#------- CODIGO A MODIFICAR PARA PROBAR TIPS ----------
-contador=int(0.3*keypointsFrontal)
+
+
+
+contador=int(0.32*keypointsFrontal)
 limiteVeces=5
 rodillasFuera= 0
 rodillasDentro= 0
 margen = 3
 
-while (contador < int(0.75*keypointsFrontal)) :
-    archivo_json= './InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
+while (contador < int(0.73*keypointsPerfil)) :
+    archivo_json= './InfoOpenPose/json/perfilJson/' + filesPerfil[contador]
     perfil_pose_keypoints_2d = extract_pose_keypoints_2d(archivo_json)
 
     rodillaDer_x=perfil_pose_keypoints_2d[10*3]
@@ -33,20 +35,21 @@ while (contador < int(0.75*keypointsFrontal)) :
     talon_Izq_x =perfil_pose_keypoints_2d[21*3]
     talon_Der_x =perfil_pose_keypoints_2d[24*3]
 
-  #  print("rodilla-bigtoe")
+
 
     print(bigToeIzq_x- rodillaIzq_x)
     print( rodillaDer_x - bigToeDer_x)
    
     #print("talon-rodilla")
-   # print(talon_Der_x-rodillaDer_x)
+    #print(talon_Der_x-rodillaDer_x)
+    #print(-(talon_Izq_x-rodillaIzq_x))
 
 
-#pongo primero rodillas dentro, pq rodillas fuera se confunde cuando los pies están muy abiertos
-    if((talon_Der_x-rodillaDer_x <= 0) and (rodillaIzq_x-talon_Izq_x <= 0 )) :
+
+    if((talon_Der_x-rodillaDer_x <= (-5)) and (rodillaIzq_x-talon_Izq_x <= (-5) )) :
             rodillasDentro =rodillasDentro +1 
 
-    elif((rodillaDer_x-bigToeDer_x <= (-41) ) or ( bigToeIzq_x - rodillaIzq_x <=  (-41) )) : 
+    if((rodillaDer_x-bigToeDer_x <= (-52) ) and ( bigToeIzq_x - rodillaIzq_x <=  (-52) )) : 
         rodillasFuera= rodillasFuera +1
 
 
@@ -54,20 +57,21 @@ while (contador < int(0.75*keypointsFrontal)) :
     contador=contador+1
 
 
-
-if rodillasFuera >= limiteVeces:
-    incorrecto.append("Evite llevar las rodillas hacia fuera. Intente que las rodillas sigan la línea del pie")
-elif rodillasDentro >= limiteVeces : 
-    incorrecto.append("Evite llevar las rodillas hacia dentro. Intente que las rodillas sigan la línea del pie")
-else:
-    correcto.append("Las rodillas siguen la línea del pie correctamente")
+if rodillasDentro >= limiteVeces and rodillasFuera>=limiteVeces:
+    correcto.append()
+else: 
+    if rodillasFuera >= limiteVeces:
+        incorrecto.append("Evite llevar las rodillas hacia fuera. Intente que las rodillas sigan la línea del pie")
+    elif rodillasDentro >= limiteVeces : 
+        incorrecto.append("Evite llevar las rodillas hacia dentro. Intente que las rodillas sigan la línea del pie")
+    else:
+        correcto.append("Las rodillas siguen la línea del pie correctamente")
 
 print("rodillas dentro:")
 print(rodillasDentro)
 print("Rodillasfuera")
 print(rodillasFuera)
 
-#-----------------------------
 print(correcto)
 print(incorrecto)
 

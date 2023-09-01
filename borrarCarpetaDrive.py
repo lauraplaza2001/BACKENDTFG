@@ -6,7 +6,7 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 
-# If modifying these scopes, delete the file token.json.
+# Si se modifica algún SCOPE, elimina el archivo token.json
 SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.file','https://www.googleapis.com/auth/gmail.send']
 
 
@@ -62,9 +62,9 @@ def delete_folder(folder_name):
 
 
 def main():
-    folder_name = 'perfilJson'  # Enter the name of the folder you want to delete
+    folder_name = 'perfilJson'  # nombre de la carpeta
     delete_folder(folder_name)
-    folder_name = 'frontalJson'  # Enter the name of the folder you want to delete
+    folder_name = 'frontalJson'  # nombre de la carpeta
     delete_folder(folder_name)
  
 

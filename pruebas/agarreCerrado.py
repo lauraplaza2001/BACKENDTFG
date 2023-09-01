@@ -15,13 +15,14 @@ filesPerfil = os.listdir(dir_path)
 keypointsPerfil= len(filesPerfil)
 correcto = []
 incorrecto= []
-#------- CODIGO A MODIFICAR PARA PROBAR TIPS ----------
+
+
 contador=0
 secumple=0
 cierraAgarre=0
 abreAgarre=0
 cotaInferior = 47
-cotaSuperior = 180
+cotaSuperior =145  #180
 
 while(contador < len(filesFrontal) * 0.5) :
     archivo_json= 'InfoOpenPose/json/frontalJson/' + filesFrontal[contador]
@@ -38,29 +39,35 @@ while(contador < len(filesFrontal) * 0.5) :
 
     print(diferenciaIzquierda)
     print(diferenciaDerecha)
+    secumpleCierraAgarre=False
+    secumpleAbreAgarre=False
 
     if(diferenciaDerecha > cotaSuperior and (diferenciaIzquierda > cotaSuperior)) :
         cierraAgarre= cierraAgarre+1
-    elif( diferenciaDerecha < cotaInferior and diferenciaIzquierda < cotaInferior ):
+        secumpleCierraAgarre = True
+    if( diferenciaDerecha < cotaInferior and (diferenciaIzquierda < cotaInferior )):
         abreAgarre = abreAgarre +1
-    else: 
+        secumpleAbreAgarre = True
+
+    if(secumpleCierraAgarre == False and secumpleAbreAgarre== False) : # se cumple si los dos son falsos
         secumple = secumple+1
 
     contador=contador + 1
                                         
-if(secumple >= 0.5 * contador) :
+if(secumple >= 0.55 * contador) :
     correcto.append("Agarre cerrado ")
-elif(cierraAgarre > 0.5 * contador):
+elif(cierraAgarre > 0.55 * contador):
                 incorrecto.append("Agarre demasiado abierto, junte más las manos")
-elif(abreAgarre > 0.5 *contador):
+elif(abreAgarre > 0.55 *contador):
                 incorrecto.append("Agarre demasiado cerrado, separe más las manos")     
-                                #else: correcto.append("Error, no se como es el agarre")
+                                
 
 print(secumple)
 print(abreAgarre)
-print(cierraAgarre)                   
+print(cierraAgarre)  
+print(contador)                 
 
-#-----------------------------
+
 print(correcto)
 print(incorrecto)
 

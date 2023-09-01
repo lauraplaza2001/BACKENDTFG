@@ -15,7 +15,7 @@ filesPerfil = os.listdir(dir_path)
 keypointsPerfil= len(filesPerfil)
 correcto = []
 incorrecto= []
-#------- CODIGO A MODIFICAR PARA PROBAR TIPS ----------
+
 
 
 
@@ -32,8 +32,6 @@ while(contador2 < 0.8* keypointsPerfil) :
     muñecaIzq_x=perfil_pose_keypoints_2d[7*3]
     codoIzq_x=perfil_pose_keypoints_2d[6*3]
                             
-
-                                            #muñeca - codos es positivo si está bien
     diferencia= muñecaIzq_x-codoIzq_x
     print(diferencia)
     if(diferencia + margen  < 0) :# si la diferencia + la cota me sale negativo es porque la muñeca está adelantando al codo
@@ -49,7 +47,6 @@ else:
 print(contador)
 
 
-#-----------------------------
 print(correcto)
 print(incorrecto)
 

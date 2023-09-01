@@ -15,9 +15,6 @@ filesPerfil = os.listdir(dir_path)
 keypointsPerfil= len(filesPerfil)
 correcto = []
 incorrecto= []
-#------- CODIGO A MODIFICAR PARA PROBAR TIPS ----------
-
-
 
 caderafinal=0
 nelementos = len(filesPerfil)
@@ -25,7 +22,7 @@ contador= int(0.75*nelementos)
 cotaExtensionCadera=16
 cota = 3 # numero de  vecesque debe cumplirse la extension de cadera 
 
-                    
+                  
 
 while (contador < nelementos) :
     archivo_json= 'InfoOpenPose/json/perfilJson/' + filesPerfil[contador]
@@ -49,8 +46,6 @@ else:
 
 
 print(caderafinal)
-
-#-----------------------------
 print(correcto)
 print(incorrecto)
 

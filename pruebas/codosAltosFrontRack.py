@@ -15,11 +15,11 @@ filesPerfil = os.listdir(dir_path)
 keypointsPerfil= len(filesPerfil)
 correcto = []
 incorrecto= []
-#------- CODIGO A MODIFICAR PARA PROBAR TIPS ----------
 
 
 
-limiteVeces=4 # si ocurre al menos 4 veces que los codos están mas bajos de la cuenta, entonces, esta mal
+
+limiteVeces=4 
 contador = 0 
 margendedistancia=54
 contador2 = 0
@@ -47,7 +47,7 @@ else:
 
 
 print(contador)
-#-----------------------------
+
 print(correcto)
 print(incorrecto)
 

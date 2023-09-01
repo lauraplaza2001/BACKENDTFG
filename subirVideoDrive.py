@@ -9,7 +9,8 @@ from googleapiclient.http import MediaFileUpload
 
 
 
-# If modifying these scopes, delete the file token.json.
+
+# Si se modifica algún SCOPE, elimina el archivo token.json
 SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.file','https://www.googleapis.com/auth/gmail.send']
 
 
@@ -54,7 +55,7 @@ def main():
                 token.write(creds.to_json())
 
         service = build('drive', 'v3', credentials=creds)
-        folder_name = 'InfoOpenPose' # Enter the name of the folder where you want to upload the videos
+        folder_name = 'InfoOpenPose' 
         query = f"name='{folder_name}' and mimeType='application/vnd.google-apps.folder' and trashed = false"
         folders = service.files().list(q=query, fields='files(id)').execute().get('files', [])
         
@@ -67,8 +68,8 @@ def main():
             folder_id = folders[0].get('id')
             print(f'Folder "{folder_name}" already exists with Folder ID: {folder_id}')
         
-        # Upload each video file
-        file_paths = ['videos/perfil.mp4'] # Enter the paths of the video files you want to upload
+
+        file_paths = ['videos/perfil.mp4'] 
         for file_path in file_paths:
             upload_video(file_path, folder_id)
 

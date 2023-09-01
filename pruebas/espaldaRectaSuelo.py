@@ -15,10 +15,6 @@ filesPerfil = os.listdir(dir_path)
 keypointsPerfil= len(filesPerfil)
 correcto = []
 incorrecto= []
-#------- CODIGO A MODIFICAR PARA PROBAR TIPS ----------
-
-
-
 
 
 contador=0
@@ -47,7 +43,7 @@ else:
                         
 
 print(contador)
-#-----------------------------
+
 print(correcto)
 print(incorrecto)
 

@@ -15,9 +15,6 @@ filesPerfil = os.listdir(dir_path)
 keypointsPerfil= len(filesPerfil)
 correcto = []
 incorrecto= []
-#------- CODIGO A MODIFICAR PARA PROBAR TIPS ----------
-
-
 
 rodillafinal=0
 nelementos = len(filesPerfil)
@@ -48,7 +45,7 @@ else:
     incorrecto.append("Debe extender la rodilla al final del movimiento")
 
 print(rodillafinal)
-#-----------------------------
+
 print(correcto)
 print(incorrecto)
 
